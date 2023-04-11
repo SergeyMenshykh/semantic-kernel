@@ -6,6 +6,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Orchestration;
+using Microsoft.SemanticKernel.Reliability;
 using Microsoft.SemanticKernel.Skills.OpenAPI.Skills;
 using RepoUtils;
 
@@ -23,13 +24,19 @@ public static class Example22_OpenApiSkill
     {
         var kernel = new KernelBuilder().WithLogger(ConsoleLogger.Log).Build();
 
+        using var retryHandler = new DefaultHttpRetryHandler()
+        {
+            InnerHandler = new HttpClientHandler() { CheckCertificateRevocationList = true }
+        };
+        using var httpClient = new HttpClient(retryHandler);
+
         //Import a OpenApi skill using one of the following Kernel extension methods
         //kernel.ImportOpenApiSkillFromResource
         //kernel.ImportOpenApiSkillFromDirectory
         //kernel.ImportOpenApiSkillFromFile
         //kernel.ImportOpenApiSkillFromUrlAsync
         //kernel.RegisterOpenApiSkill
-        var skill = await kernel.ImportOpenApiSkillFromResourceAsync(SkillResourceNames.AzureKeyVault, AuthenticateWithBearerToken);
+        var skill = await kernel.ImportOpenApiSkillFromResourceAsync(SkillResourceNames.AzureKeyVault, httpClient, AuthenticateWithBearerToken);
 
         //Add arguments for required parameters, arguments for optional ones can be skipped.
         var contextVariables = new ContextVariables();
@@ -47,13 +54,19 @@ public static class Example22_OpenApiSkill
     {
         var kernel = new KernelBuilder().WithLogger(ConsoleLogger.Log).Build();
 
+        using var retryHandler = new DefaultHttpRetryHandler()
+        {
+            InnerHandler = new HttpClientHandler() { CheckCertificateRevocationList = true }
+        };
+        using var httpClient = new HttpClient(retryHandler);
+
         //Import a OpenApi skill using one of the following Kernel extension methods
         //kernel.ImportOpenApiSkillFromResource
         //kernel.ImportOpenApiSkillFromDirectory
         //kernel.ImportOpenApiSkillFromFile
         //kernel.ImportOpenApiSkillFromUrlAsync
         //kernel.RegisterOpenApiSkill
-        var skill = await kernel.ImportOpenApiSkillFromResourceAsync(SkillResourceNames.AzureKeyVault, AuthenticateWithBearerToken);
+        var skill = await kernel.ImportOpenApiSkillFromResourceAsync(SkillResourceNames.AzureKeyVault, httpClient, AuthenticateWithBearerToken);
 
         //Add arguments for required parameters, arguments for optional ones can be skipped.
         var contextVariables = new ContextVariables();

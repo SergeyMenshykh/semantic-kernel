@@ -8,9 +8,9 @@ using System.Text.RegularExpressions;
 namespace Microsoft.SemanticKernel.Skills.OpenAPI.Model;
 
 /// <summary>
-/// Class for extensions methods for the <see cref="RestApiOperation"/> class.
+/// Class for extensions methods for the <see cref="IKernel"/> class.
 /// </summary>
-internal static class RestApiOperationOpenAPIExtensions
+internal static class RestApiOperationExtensions
 {
     /// <summary>
     /// Returns list of REST API operation parameters.

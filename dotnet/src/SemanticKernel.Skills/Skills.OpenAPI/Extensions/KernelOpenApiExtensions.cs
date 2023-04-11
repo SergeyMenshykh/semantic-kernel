@@ -32,7 +32,7 @@ public static class KernelOpenApiExtensions
     /// <param name="kernel">Semantic Kernel instance.</param>
     /// <param name="skillName">Skill name.</param>
     /// <param name="url">Url to in which to retrieve the OpenAPI definition.</param>
-    /// <param name="httpClient">Optional HttpClient to use for the request.</param>
+    /// <param name="httpClient">HttpClient to use for the request and running the skill.</param>
     /// <param name="authCallback">Optional callback for adding auth data to the API requests.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A list of all the semantic functions representing the skill.</returns>
@@ -40,7 +40,7 @@ public static class KernelOpenApiExtensions
         this IKernel kernel,
         string skillName,
         Uri url,
-        HttpClient? httpClient = null,
+        HttpClient httpClient,
         AuthenticateRequestAsyncCallback? authCallback = null,
         CancellationToken cancellationToken = default)
     {
@@ -49,22 +49,7 @@ public static class KernelOpenApiExtensions
         HttpResponseMessage? response = null;
         try
         {
-            if (httpClient == null)
-            {
-                // TODO Fix this:  throwing "The inner handler has not been assigned"
-                //using DefaultHttpRetryHandler retryHandler = new DefaultHttpRetryHandler(
-                //  config: new HttpRetryConfig() { MaxRetryCount = 3 },
-                //  log: null);
-
-                //using HttpClient client = new HttpClient(retryHandler, false);
-                using HttpClient client = new HttpClient();
-
-                response = await client.GetAsync(url, cancellationToken).ConfigureAwait(false);
-            }
-            else
-            {
-                response = await httpClient.GetAsync(url, cancellationToken).ConfigureAwait(false);
-            }
+            response = await httpClient.GetAsync(url, cancellationToken).ConfigureAwait(false);
 
             response.EnsureSuccessStatusCode();
 
@@ -74,7 +59,7 @@ public static class KernelOpenApiExtensions
                 throw new MissingManifestResourceException($"Unable to load OpenApi skill from url '{url}'.");
             }
 
-            return await kernel.RegisterOpenApiSkillAsync(stream, skillName, authCallback, cancellationToken).ConfigureAwait(false);
+            return await kernel.RegisterOpenApiSkillAsync(stream, skillName, httpClient, authCallback, cancellationToken).ConfigureAwait(false);
         }
         finally
         {
@@ -86,16 +71,18 @@ public static class KernelOpenApiExtensions
     }
 
     /// <summary>
-    /// Imports OpenApi document from assembly resource.
+    /// Imports OpenApi skill from assembly resource.
     /// </summary>
     /// <param name="kernel">Semantic Kernel instance.</param>
     /// <param name="skillName">Skill name.</param>
+    /// <param name="httpClient">Http client for running the skill.</param>
     /// <param name="authCallback">Optional callback for adding auth data to the API requests.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A list of all the semantic functions representing the skill.</returns>
     public static Task<IDictionary<string, ISKFunction>> ImportOpenApiSkillFromResourceAsync(
         this IKernel kernel,
         string skillName,
+        HttpClient httpClient,
         AuthenticateRequestAsyncCallback? authCallback = null,
         CancellationToken cancellationToken = default)
     {
@@ -111,15 +98,16 @@ public static class KernelOpenApiExtensions
             throw new MissingManifestResourceException($"Unable to load OpenApi skill from assembly resource '{resourceName}'.");
         }
 
-        return kernel.RegisterOpenApiSkillAsync(stream, skillName, authCallback, cancellationToken);
+        return kernel.RegisterOpenApiSkillAsync(stream, skillName, httpClient, authCallback, cancellationToken);
     }
 
     /// <summary>
-    /// Imports OpenApi document from a directory.
+    /// Imports OpenApi skill from a directory.
     /// </summary>
     /// <param name="kernel">Semantic Kernel instance.</param>
     /// <param name="parentDirectory">Directory containing the skill directory.</param>
     /// <param name="skillDirectoryName">Name of the directory containing the selected skill.</param>
+    /// <param name="httpClient">Http client for running the skill.</param>
     /// <param name="authCallback">Optional callback for adding auth data to the API requests.</param>
     /// <param name="cancellationToken"></param>
     /// <returns>A list of all the semantic functions representing the skill.</returns>
@@ -127,6 +115,7 @@ public static class KernelOpenApiExtensions
         this IKernel kernel,
         string parentDirectory,
         string skillDirectoryName,
+        HttpClient httpClient,
         AuthenticateRequestAsyncCallback? authCallback = null,
         CancellationToken cancellationToken = default)
     {
@@ -145,20 +134,18 @@ public static class KernelOpenApiExtensions
 
         kernel.Log.LogTrace("Registering Rest functions from {0} OpenApi document.", openApiDocumentPath);
 
-        // TODO: never used, why?
-        var skill = new Dictionary<string, ISKFunction>();
-
         using var stream = File.OpenRead(openApiDocumentPath);
 
-        return await kernel.RegisterOpenApiSkillAsync(stream, skillDirectoryName, authCallback, cancellationToken).ConfigureAwait(false);
+        return await kernel.RegisterOpenApiSkillAsync(stream, skillDirectoryName, httpClient, authCallback, cancellationToken).ConfigureAwait(false);
     }
 
     /// <summary>
-    /// Imports OpenApi document from a file.
+    /// Imports OpenApi skill from a file.
     /// </summary>
     /// <param name="kernel">Semantic Kernel instance.</param>
     /// <param name="skillName">Name of the skill to register.</param>
     /// <param name="filePath">File path to the OpenAPI document.</param>
+    /// <param name="httpClient">Http client for running the skill.</param>
     /// <param name="authCallback">Optional callback for adding auth data to the API requests.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A list of all the semantic functions representing the skill.</returns>
@@ -166,6 +153,7 @@ public static class KernelOpenApiExtensions
         this IKernel kernel,
         string skillName,
         string filePath,
+        HttpClient httpClient,
         AuthenticateRequestAsyncCallback? authCallback = null,
         CancellationToken cancellationToken = default)
     {
@@ -176,12 +164,9 @@ public static class KernelOpenApiExtensions
 
         kernel.Log.LogTrace("Registering Rest functions from {0} OpenApi document", filePath);
 
-        // TODO: never used, why?
-        var skill = new Dictionary<string, ISKFunction>();
-
         using var stream = File.OpenRead(filePath);
 
-        return await kernel.RegisterOpenApiSkillAsync(stream, skillName, authCallback, cancellationToken).ConfigureAwait(false);
+        return await kernel.RegisterOpenApiSkillAsync(stream, skillName, httpClient, authCallback, cancellationToken).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -190,6 +175,7 @@ public static class KernelOpenApiExtensions
     /// <param name="kernel">Semantic Kernel instance.</param>
     /// <param name="documentStream">OpenApi document stream.</param>
     /// <param name="skillName">Skill name.</param>
+    /// <param name="httpClient">Http client for running the skill.</param>
     /// <param name="authCallback">Optional callback for adding auth data to the API requests.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A list of all the semantic functions representing the skill.</returns>
@@ -197,6 +183,7 @@ public static class KernelOpenApiExtensions
         this IKernel kernel,
         Stream documentStream,
         string skillName,
+        HttpClient httpClient,
         AuthenticateRequestAsyncCallback? authCallback = null,
         CancellationToken cancellationToken = default)
     {
@@ -208,6 +195,8 @@ public static class KernelOpenApiExtensions
 
         var operations = await parser.ParseAsync(documentStream, cancellationToken).ConfigureAwait(false);
 
+        var runner = new RestApiOperationRunner(httpClient, authCallback);
+
         var skill = new Dictionary<string, ISKFunction>();
 
         foreach (var operation in operations)
@@ -215,7 +204,7 @@ public static class KernelOpenApiExtensions
             try
             {
                 kernel.Log.LogTrace("Registering Rest function {0}.{1}", skillName, operation.Id);
-                var function = kernel.RegisterRestApiFunction(skillName, operation, authCallback, cancellationToken);
+                var function = kernel.RegisterRestApiFunction(skillName, runner, operation, authCallback, cancellationToken);
                 skill[function.Name] = function;
             }
             catch (Exception ex) when (!ex.IsCriticalException())
@@ -236,6 +225,7 @@ public static class KernelOpenApiExtensions
     /// </summary>
     /// <param name="kernel">Semantic Kernel instance.</param>
     /// <param name="skillName">Skill name.</param>
+    /// <param name="runner">The REST API operation runner.</param>
     /// <param name="operation">The REST API operation.</param>
     /// <param name="authCallback">Optional callback for adding auth data to the API requests.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
@@ -243,6 +233,7 @@ public static class KernelOpenApiExtensions
     private static ISKFunction RegisterRestApiFunction(
         this IKernel kernel,
         string skillName,
+        IRestApiOperationRunner runner,
         RestApiOperation operation,
         AuthenticateRequestAsyncCallback? authCallback = null,
         CancellationToken cancellationToken = default)
@@ -253,8 +244,6 @@ public static class KernelOpenApiExtensions
         {
             try
             {
-                var runner = new RestApiOperationRunner(new HttpClient(), authCallback);
-
                 // Extract function arguments from context
                 var arguments = new Dictionary<string, string>();
                 foreach (var parameter in restOperationParameters)
