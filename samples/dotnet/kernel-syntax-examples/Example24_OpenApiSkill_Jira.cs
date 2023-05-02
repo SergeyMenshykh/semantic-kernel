@@ -2,9 +2,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Orchestration;
+using Microsoft.SemanticKernel.Reliability;
 using Microsoft.SemanticKernel.SkillDefinition;
 using Microsoft.SemanticKernel.Skills.OpenAPI.Authentication;
 using Newtonsoft.Json;
@@ -22,6 +24,12 @@ public static class Example24_OpenApiSkill_Jira
     {
         var kernel = new KernelBuilder().WithLogger(ConsoleLogger.Log).Build();
         var contextVariables = new ContextVariables();
+
+        using var retryHandler = new DefaultHttpRetryHandler()
+        {
+            InnerHandler = new HttpClientHandler() { CheckCertificateRevocationList = true }
+        };
+        using var httpClient = new HttpClient(retryHandler);
 
         // Change <your-domain> to a jira instance you have access to with your authentication credentials
         string serverUrl = "https://<your-domain>.atlassian.net/rest/api/latest/";

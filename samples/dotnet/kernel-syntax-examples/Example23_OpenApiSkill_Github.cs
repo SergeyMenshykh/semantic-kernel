@@ -2,9 +2,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Orchestration;
+using Microsoft.SemanticKernel.Reliability;
 using Microsoft.SemanticKernel.Skills.OpenAPI.Authentication;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -32,9 +34,15 @@ public static class Example23_OpenApiSkill_GitHub
     {
         var kernel = new KernelBuilder().WithLogger(ConsoleLogger.Log).Build();
 
+        using var retryHandler = new DefaultHttpRetryHandler()
+        {
+            InnerHandler = new HttpClientHandler() { CheckCertificateRevocationList = true }
+        };
+        using var httpClient = new HttpClient(retryHandler);
+
         var skill = await kernel.ImportOpenApiSkillFromFileAsync(
             "GitHubSkill",
-            "../../../samples/apps/copilot-chat-app/webapi/Skills/OpenApiSkills/GitHubSkill/openapi.json",
+            "../../../samples/apps/copilot-chat-app/webapi/Skills/OpenApiSkills/GitHubSkill/openapi.json", httpClient,
             authenticationProvider.AuthenticateRequestAsync);
 
         // Add arguments for required parameters, arguments for optional ones can be skipped.
