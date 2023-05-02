@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.SemanticKernel.TemplateEngine.Blocks;
+using Microsoft.SemanticKernel.Text;
 
 namespace Microsoft.SemanticKernel.TemplateEngine;
 
@@ -32,7 +33,7 @@ namespace Microsoft.SemanticKernel.TemplateEngine;
 /// [letter]         ::= "a" | "b" ... | "z" | "A" | "B" ... | "Z"
 /// [digit]          ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
 /// </summary>
-internal class CodeTokenizer
+internal sealed class CodeTokenizer
 {
     private enum TokenTypes
     {
@@ -60,7 +61,7 @@ internal class CodeTokenizer
         text = text?.Trim();
 
         // Render NULL to ""
-        if (string.IsNullOrEmpty(text)) { return new List<Block>(); }
+        if (text.IsNullOrEmpty()) { return new List<Block>(); }
 
         // Track what type of token we're reading
         TokenTypes currentTokenType = TokenTypes.None;

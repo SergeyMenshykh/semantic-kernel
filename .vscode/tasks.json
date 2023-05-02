@@ -123,6 +123,8 @@
         "test",
         "--collect",
         "XPlat Code Coverage;Format=lcov",
+        "--filter",
+        "${input:filter}",
         "SemanticKernel.UnitTests.csproj"
       ],
       "problemMatcher": "$msCompile",
@@ -136,14 +138,16 @@
       }
     },
     {
-      "label": "Test - Semantic-Kernel Integration (Code Coverage)",
+      "label": "Test - Extensions (Code Coverage)",
       "command": "dotnet",
       "type": "process",
       "args": [
         "test",
         "--collect",
         "XPlat Code Coverage;Format=lcov",
-        "SemanticKernel.IntegrationTests.csproj"
+        "--filter",
+        "${input:filter}",
+        "Extensions.UnitTests.csproj"
       ],
       "problemMatcher": "$msCompile",
       "group": "test",
@@ -152,7 +156,29 @@
         "panel": "shared"
       },
       "options": {
-        "cwd": "${workspaceFolder}/dotnet/src/SemanticKernel.IntegrationTests/"
+        "cwd": "${workspaceFolder}/dotnet/src/Extensions/Extensions.UnitTests/"
+      }
+    },
+    {
+      "label": "Test - Semantic-Kernel Integration (Code Coverage)",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "test",
+        "--collect",
+        "XPlat Code Coverage;Format=lcov",
+        "--filter",
+        "${input:filter}",
+        "IntegrationTests.csproj"
+      ],
+      "problemMatcher": "$msCompile",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "options": {
+        "cwd": "${workspaceFolder}/dotnet/src/IntegrationTests/"
       }
     },
     {
@@ -231,6 +257,14 @@
         "panel": "shared",
         "group": "Run-Samples"
       }
+    }
+  ],
+  "inputs": [
+    {
+      "id": "filter",
+      "type": "promptString",
+      "default": "",
+      "description": "Enter a filter for the tests"
     }
   ]
 }
