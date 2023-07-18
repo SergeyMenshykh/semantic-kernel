@@ -8,6 +8,8 @@ using Microsoft.SemanticKernel.Planning.Sequential;
 using Microsoft.SemanticKernel.Skills.Core;
 using RepoUtils;
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to throw exceptions.
+
 // ReSharper disable CommentTypo
 // ReSharper disable once InconsistentNaming
 internal static class Example48_GroundednessChecks

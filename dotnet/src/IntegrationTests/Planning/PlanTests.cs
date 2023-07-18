@@ -17,6 +17,8 @@ using Xunit.Abstractions;
 
 namespace SemanticKernel.IntegrationTests.Planning;
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to throw exceptions.
+
 public sealed class PlanTests : IDisposable
 {
     public PlanTests(ITestOutputHelper output)

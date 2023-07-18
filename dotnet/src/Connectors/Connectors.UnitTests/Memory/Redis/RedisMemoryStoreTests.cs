@@ -17,6 +17,8 @@ using Xunit;
 
 namespace SemanticKernel.Connectors.UnitTests.Memory.Redis;
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to no longer use obsolete exception types.
+
 /// <summary>
 /// Unit tests of <see cref="RedisMemoryStore"/>.
 /// </summary>

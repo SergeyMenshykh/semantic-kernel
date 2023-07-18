@@ -7,6 +7,8 @@ using Microsoft.SemanticKernel.AI.Embeddings;
 
 namespace Microsoft.SemanticKernel.Memory;
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to no longer use obsolete exception types.
+
 /// <summary>
 /// IMPORTANT: this is a storage schema. Changing the fields will invalidate existing metadata stored in persistent vector DBs.
 /// </summary>

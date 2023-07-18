@@ -16,6 +16,8 @@ using Xunit.Abstractions;
 
 namespace SemanticKernel.Skills.UnitTests.MsGraph;
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to no longer use obsolete exception types.
+
 public class CalendarSkillTests : IDisposable
 {
     private readonly XunitLogger<SKContext> _logger;

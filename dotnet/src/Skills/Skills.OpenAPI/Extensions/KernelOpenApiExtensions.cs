@@ -27,6 +27,8 @@ using Microsoft.SemanticKernel.Skills.OpenAPI.Skills;
 namespace Microsoft.SemanticKernel;
 #pragma warning restore IDE0130
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to no longer use obsolete exception types.
+
 /// <summary>
 /// Class for extensions methods for <see cref="IKernel"/> interface.
 /// </summary>

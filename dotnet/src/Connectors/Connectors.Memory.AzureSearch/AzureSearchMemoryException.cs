@@ -9,6 +9,7 @@ namespace Microsoft.SemanticKernel.Connectors.Memory.AzureSearch;
 /// <summary>
 /// Exception thrown by the Azure Cognitive Search connector
 /// </summary>
+[Obsolete("This class is deprecated and will be removed in one of the upcoming SK SDK versions. Instead, please expect an SKException or one of its derivatives.")]
 public class AzureSearchMemoryException : Exception
 {
     /// <summary>
@@ -50,6 +51,7 @@ public class AzureSearchMemoryException : Exception
     /// <summary>
     /// Error codes for the Qdrant connector exceptions.
     /// </summary>
+    [Obsolete("This enum is deprecated and will be removed in one of the upcoming SK SDK versions.")]
     public enum ErrorCodes
     {
         /// <summary>

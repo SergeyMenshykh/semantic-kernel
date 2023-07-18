@@ -16,6 +16,8 @@ using Xunit.Abstractions;
 
 namespace SemanticKernel.Extensions.UnitTests.Planning.SequentialPlanner;
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to no longer use obsolete exception types.
+
 public class SequentialPlanParserTests
 {
     private readonly ITestOutputHelper _testOutputHelper;

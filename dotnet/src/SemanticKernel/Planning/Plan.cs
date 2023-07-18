@@ -17,6 +17,8 @@ using Microsoft.SemanticKernel.SkillDefinition;
 
 namespace Microsoft.SemanticKernel.Planning;
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to no longer use obsolete exception types.
+
 /// <summary>
 /// Standard Semantic Kernel callable plan.
 /// Plan is used to create trees of <see cref="ISKFunction"/>s.

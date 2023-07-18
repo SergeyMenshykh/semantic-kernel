@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -92,6 +93,7 @@ public interface IKernel
     /// </summary>
     /// <param name="pipeline">List of functions</param>
     /// <returns>Result of the function composition</returns>
+    [Obsolete("This method is not obsolete; however, please be aware that in the upcoming SK SDK versions, it will begin to throw SKException and its derivatives, in addition to the standard .NET exceptions. Therefore, ensure that you have proper exception handling in place.")]
     Task<SKContext> RunAsync(
         params ISKFunction[] pipeline);
 
@@ -101,6 +103,7 @@ public interface IKernel
     /// <param name="input">Input to process</param>
     /// <param name="pipeline">List of functions</param>
     /// <returns>Result of the function composition</returns>
+    [Obsolete("This method is not obsolete; however, please be aware that in the upcoming SK SDK versions, it will begin to throw SKException and its derivatives, in addition to the standard .NET exceptions. Therefore, ensure that you have proper exception handling in place.")]
     Task<SKContext> RunAsync(
         string input,
         params ISKFunction[] pipeline);
@@ -111,6 +114,7 @@ public interface IKernel
     /// <param name="variables">Input to process</param>
     /// <param name="pipeline">List of functions</param>
     /// <returns>Result of the function composition</returns>
+    [Obsolete("This method is not obsolete; however, please be aware that in the upcoming SK SDK versions, it will begin to throw SKException and its derivatives, in addition to the standard .NET exceptions. Therefore, ensure that you have proper exception handling in place.")]
     Task<SKContext> RunAsync(
         ContextVariables variables,
         params ISKFunction[] pipeline);
@@ -121,6 +125,7 @@ public interface IKernel
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
     /// <param name="pipeline">List of functions</param>
     /// <returns>Result of the function composition</returns>
+    [Obsolete("This method is not obsolete; however, please be aware that in the upcoming SK SDK versions, it will begin to throw SKException and its derivatives, in addition to the standard .NET exceptions. Therefore, ensure that you have proper exception handling in place.")]
     Task<SKContext> RunAsync(
         CancellationToken cancellationToken,
         params ISKFunction[] pipeline);
@@ -132,6 +137,7 @@ public interface IKernel
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
     /// <param name="pipeline">List of functions</param>
     /// <returns>Result of the function composition</returns>
+    [Obsolete("This method is not obsolete; however, please be aware that in the upcoming SK SDK versions, it will begin to throw SKException and its derivatives, in addition to the standard .NET exceptions. Therefore, ensure that you have proper exception handling in place.")]
     Task<SKContext> RunAsync(
         string input,
         CancellationToken cancellationToken,
@@ -144,6 +150,7 @@ public interface IKernel
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
     /// <param name="pipeline">List of functions</param>
     /// <returns>Result of the function composition</returns>
+    [Obsolete("This method is not obsolete; however, please be aware that in the upcoming SK SDK versions, it will begin to throw SKException and its derivatives, in addition to the standard .NET exceptions. Therefore, ensure that you have proper exception handling in place.")]
     Task<SKContext> RunAsync(
         ContextVariables variables,
         CancellationToken cancellationToken,

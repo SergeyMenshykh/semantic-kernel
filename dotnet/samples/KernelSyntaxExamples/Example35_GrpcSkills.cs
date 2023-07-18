@@ -7,6 +7,8 @@ using Microsoft.SemanticKernel.Orchestration;
 using Microsoft.SemanticKernel.Skills.Grpc.Extensions;
 using RepoUtils;
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to throw exceptions.
+
 /**
  * This example shows how to use gRPC skills.
  */

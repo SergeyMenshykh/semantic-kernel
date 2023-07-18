@@ -20,6 +20,8 @@ using Microsoft.SemanticKernel.SkillDefinition;
 namespace Microsoft.SemanticKernel.Planning;
 #pragma warning restore IDE0130
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to no longer use obsolete exception types.
+
 /// <summary>
 /// A planner that creates a Stepwise plan using Mrkl systems.
 /// </summary>
@@ -94,6 +96,7 @@ public class StepwisePlanner
     }
 
     [SKFunction, SKName("ExecutePlan"), Description("Execute a plan")]
+    [Obsolete("This method is not obsolete; however, please be aware that in the upcoming SK SDK versions, it will begin to throw SKException and its derivatives, in addition to the standard .NET exceptions. Therefore, ensure that you have proper exception handling in place.")]
     public async Task<SKContext> ExecutePlanAsync(
         [Description("The question to answer")]
         string question,

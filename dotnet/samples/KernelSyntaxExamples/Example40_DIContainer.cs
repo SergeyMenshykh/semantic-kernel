@@ -12,6 +12,8 @@ using Microsoft.SemanticKernel.SkillDefinition;
 using Microsoft.SemanticKernel.TemplateEngine;
 using RepoUtils;
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to throw exceptions.
+
 /**
  * The following examples show how to use SK SDK in applications using DI/IoC containers.
  */

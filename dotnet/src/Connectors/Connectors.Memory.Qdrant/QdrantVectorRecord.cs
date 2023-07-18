@@ -7,6 +7,8 @@ using Microsoft.SemanticKernel.Connectors.Memory.Qdrant.Diagnostics;
 
 namespace Microsoft.SemanticKernel.Connectors.Memory.Qdrant;
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to no longer use obsolete exception types.
+
 /// <summary>
 /// A record structure used by Qdrant that contains an embedding and metadata.
 /// </summary>

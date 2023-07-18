@@ -19,6 +19,8 @@ using Microsoft.SemanticKernel.Diagnostics;
 
 namespace Microsoft.SemanticKernel.Connectors.AI.Oobabooga.TextCompletion;
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to no longer use obsolete exception types.
+
 /// <summary>
 /// Oobabooga text completion service API.
 /// Adapted from <see href="https://github.com/oobabooga/text-generation-webui/tree/main/api-examples"/>

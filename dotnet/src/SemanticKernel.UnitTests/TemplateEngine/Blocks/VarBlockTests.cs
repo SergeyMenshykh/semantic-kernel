@@ -7,6 +7,8 @@ using Xunit;
 
 namespace SemanticKernel.UnitTests.TemplateEngine.Blocks;
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to no longer use obsolete exception types.
+
 public class VarBlockTests
 {
     [Fact]

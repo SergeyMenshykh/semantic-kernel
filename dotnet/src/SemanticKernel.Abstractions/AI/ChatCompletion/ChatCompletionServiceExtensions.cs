@@ -8,6 +8,8 @@ using Microsoft.SemanticKernel.Services;
 namespace Microsoft.SemanticKernel;
 #pragma warning restore IDE0130 // Namespace does not match folder structure
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to no longer use obsolete exception types.
+
 public static class ChatCompletionServiceExtensions
 {
     /// <summary>

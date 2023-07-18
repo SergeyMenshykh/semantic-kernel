@@ -13,6 +13,8 @@ using Microsoft.SemanticKernel.Skills.OpenAPI.Model;
 
 namespace Microsoft.SemanticKernel.Skills.OpenAPI;
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to no longer use obsolete exception types.
+
 /// <summary>
 /// Runs REST API operation represented by RestApiOperation model class.
 /// </summary>

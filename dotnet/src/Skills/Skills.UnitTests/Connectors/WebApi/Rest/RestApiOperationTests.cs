@@ -9,6 +9,8 @@ using Xunit;
 
 namespace SemanticKernel.Skills.UnitTests.Connectors.WebApi.Rest;
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to no longer use obsolete exception types.
+
 public class RestApiOperationTests
 {
     [Fact]

@@ -15,6 +15,7 @@ namespace SemanticKernel.IntegrationTests.TemplateLanguage;
 
 #pragma warning disable VSTHRD103 // ok to use WriteLine synchronously
 #pragma warning disable CA1849 // ok to use WriteLine synchronously
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to no longer use obsolete exception types.
 
 public sealed class PromptTemplateEngineTests : IDisposable
 {

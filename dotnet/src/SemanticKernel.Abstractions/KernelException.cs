@@ -10,6 +10,7 @@ namespace Microsoft.SemanticKernel;
 /// <summary>
 /// Exception thrown for errors related to kernel logic.
 /// </summary>
+[Obsolete("This class is deprecated and will be removed in one of the upcoming SK SDK versions. Instead, please expect an SKException or one of its derivatives.")]
 public class KernelException : SKException
 {
     /// <summary>
@@ -64,6 +65,7 @@ public class KernelException : SKException
     /// <summary>
     /// Semantic kernel error codes.
     /// </summary>
+    [Obsolete("This enum is deprecated and will be removed in one of the upcoming SK SDK versions.")]
     public enum ErrorCodes
     {
         /// <summary>

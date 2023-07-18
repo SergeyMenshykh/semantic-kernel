@@ -54,6 +54,7 @@ public interface ISKFunction
     /// <param name="context">SK context</param>
     /// <param name="settings">LLM completion settings (for semantic functions only)</param>
     /// <returns>The updated context, potentially a new one if context switching is implemented.</returns>
+    [Obsolete("This method is not obsolete; however, please be aware that in the upcoming SK SDK versions, it will begin to throw SKException and its derivatives, in addition to the standard .NET exceptions. Therefore, ensure that you have proper exception handling in place.")]
     Task<SKContext> InvokeAsync(
         SKContext context,
         CompleteRequestSettings? settings = null);
@@ -67,6 +68,7 @@ public interface ISKFunction
     /// <param name="logger">Application logger</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
     /// <returns>The updated context, potentially a new one if context switching is implemented.</returns>
+    [Obsolete("This method is not obsolete; however, please be aware that in the upcoming SK SDK versions, it will begin to throw SKException and its derivatives, in addition to the standard .NET exceptions. Therefore, ensure that you have proper exception handling in place.")]
     Task<SKContext> InvokeAsync(
         string? input = null,
         CompleteRequestSettings? settings = null,

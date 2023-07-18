@@ -10,6 +10,7 @@ namespace Microsoft.SemanticKernel.Connectors.Memory.Qdrant.Diagnostics;
 /// <summary>
 /// Exception thrown for errors related to the Qdrant connector.
 /// </summary>
+[Obsolete("This class is deprecated and will be removed in one of the upcoming SK SDK versions. Instead, please expect an SKException or one of its derivatives.")]
 public class QdrantMemoryException : SKException
 {
     /// <summary>
@@ -83,6 +84,7 @@ public class QdrantMemoryException : SKException
     /// <summary>
     /// Error codes for the Qdrant connector exceptions.
     /// </summary>
+    [Obsolete("This enum is deprecated and will be removed in one of the upcoming SK SDK versions.")]
     public enum ErrorCodes
     {
         /// <summary>

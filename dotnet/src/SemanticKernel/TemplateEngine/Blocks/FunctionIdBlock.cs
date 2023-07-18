@@ -7,6 +7,8 @@ using Microsoft.SemanticKernel.Orchestration;
 
 namespace Microsoft.SemanticKernel.TemplateEngine.Blocks;
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to no longer use obsolete exception types.
+
 internal sealed class FunctionIdBlock : Block, ITextRendering
 {
     internal override BlockTypes Type => BlockTypes.FunctionId;

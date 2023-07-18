@@ -6,6 +6,8 @@ using Xunit;
 
 namespace SemanticKernel.UnitTests.Memory;
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to no longer use obsolete exception types.
+
 public class MemoryExceptionTests
 {
     [Fact]

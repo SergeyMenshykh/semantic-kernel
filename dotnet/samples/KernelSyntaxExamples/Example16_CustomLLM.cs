@@ -13,6 +13,8 @@ using RepoUtils;
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to throw exceptions.
+
 /**
  * The following example shows how to plug into SK a custom text completion model.
  *

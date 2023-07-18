@@ -14,6 +14,8 @@ using Microsoft.SemanticKernel.Memory;
 
 namespace Microsoft.SemanticKernel.Connectors.Memory.Qdrant;
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to no longer use obsolete exception types.
+
 /// <summary>
 /// An implementation of <see cref="IMemoryStore"/> for Qdrant Vector Database.
 /// </summary>

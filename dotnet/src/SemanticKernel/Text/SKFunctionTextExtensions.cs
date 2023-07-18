@@ -9,6 +9,8 @@ using Microsoft.SemanticKernel.Orchestration;
 namespace Microsoft.SemanticKernel.SkillDefinition;
 #pragma warning restore IDE0130
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to throw exceptions.
+
 /// <summary>
 /// Class with extension methods for semantic functions.
 /// </summary>

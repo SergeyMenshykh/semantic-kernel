@@ -20,6 +20,8 @@ using Microsoft.SemanticKernel.Text;
 
 namespace Microsoft.SemanticKernel.Connectors.AI.OpenAI.CustomClient;
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to no longer use obsolete exception types.
+
 /// <summary>Base type for OpenAI clients.</summary>
 public abstract class OpenAIClientBase
 {

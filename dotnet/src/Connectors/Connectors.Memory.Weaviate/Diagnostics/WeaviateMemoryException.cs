@@ -10,6 +10,7 @@ namespace Microsoft.SemanticKernel.Connectors.Memory.Weaviate.Diagnostics;
 /// <summary>
 /// Exception thrown for errors related to the Weaviate connector.
 /// </summary>
+[Obsolete("This class is deprecated and will be removed in one of the upcoming SK SDK versions. Instead, please expect an SKException or one of its derivatives.")]
 public class WeaviateMemoryException : SKException
 {
     /// <summary>
@@ -85,6 +86,7 @@ public class WeaviateMemoryException : SKException
     /// <summary>
     /// Error codes for the Weaviate connector exceptions.
     /// </summary>
+    [Obsolete("This enum is deprecated and will be removed in one of the upcoming SK SDK versions.")]
     public enum ErrorCodes
     {
         /// <summary>

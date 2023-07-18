@@ -9,6 +9,8 @@ using Microsoft.SemanticKernel.Text;
 
 namespace Microsoft.SemanticKernel.TemplateEngine;
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to no longer use obsolete exception types.
+
 /// <summary>
 /// Simple tokenizer used for default SK template code language.
 ///

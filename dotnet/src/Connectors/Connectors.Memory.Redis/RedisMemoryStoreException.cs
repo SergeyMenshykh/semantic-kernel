@@ -9,6 +9,7 @@ namespace Microsoft.SemanticKernel.Connectors.Memory.Redis;
 /// <summary>
 /// Exception thrown by the Redis connector
 /// </summary>
+[Obsolete("This class is deprecated and will be removed in one of the upcoming SK SDK versions. Instead, please expect an SKException or one of its derivatives.")]
 public class RedisMemoryStoreException : Exception
 {
     /// <summary>

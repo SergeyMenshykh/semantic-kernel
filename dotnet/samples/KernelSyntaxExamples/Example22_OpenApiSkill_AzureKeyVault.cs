@@ -11,6 +11,8 @@ using Microsoft.SemanticKernel.Skills.OpenAPI.Extensions;
 using Microsoft.SemanticKernel.Skills.OpenAPI.Skills;
 using RepoUtils;
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to throw exceptions.
+
 #pragma warning disable CA1861 // Avoid constant arrays as arguments
 // ReSharper disable once InconsistentNaming
 public static class Example22_OpenApiSkill_AzureKeyVault

@@ -12,6 +12,8 @@ using Microsoft.SemanticKernel.Skills.OpenAPI.Extensions;
 using Newtonsoft.Json;
 using RepoUtils;
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to throw exceptions.
+
 /// <summary>
 /// This sample shows how to connect the Semantic Kernel to Jira as an Open Api plugin based on the Open Api schema.
 /// This format of registering the skill and its operations, and subsequently executing those operations can be applied

@@ -12,6 +12,8 @@ using Xunit;
 
 namespace SemanticKernel.IntegrationTests.Connectors.Memory.Chroma;
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to no longer use obsolete exception types.
+
 /// <summary>
 /// Integration tests for <see cref="ChromaMemoryStore"/> class.
 /// Tests work with local Chroma server. To setup the server, see dotnet/src/Connectors/Connectors.Memory.Chroma/README.md.

@@ -12,6 +12,8 @@ using Microsoft.SemanticKernel.SkillDefinition;
 namespace Microsoft.SemanticKernel.Planning;
 #pragma warning restore IDE0130
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to no longer use obsolete exception types.
+
 /// <summary>
 /// A planner that uses semantic function to create a sequential plan.
 /// </summary>

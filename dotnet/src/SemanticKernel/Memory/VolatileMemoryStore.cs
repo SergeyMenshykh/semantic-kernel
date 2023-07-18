@@ -14,6 +14,8 @@ using Microsoft.SemanticKernel.Memory.Collections;
 
 namespace Microsoft.SemanticKernel.Memory;
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to no longer use obsolete exception types.
+
 /// <summary>
 /// A simple volatile memory embeddings store.
 /// </summary>

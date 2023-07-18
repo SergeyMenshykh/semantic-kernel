@@ -25,6 +25,8 @@ using Microsoft.SemanticKernel.TemplateEngine;
 using Polly;
 using Polly.Retry;
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to no longer use obsolete exception types.
+
 // ReSharper disable once InconsistentNaming
 public static class Example42_KernelBuilder
 {

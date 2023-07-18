@@ -7,6 +7,7 @@ namespace Microsoft.SemanticKernel.Connectors.Memory.Chroma;
 /// <summary>
 /// Exception to identify issues in <see cref="ChromaMemoryStore"/> class.
 /// </summary>
+[Obsolete("This class is deprecated and will be removed in one of the upcoming SK SDK versions. Instead, please expect an SKException or one of its derivatives.")]
 public class ChromaMemoryStoreException : Exception
 {
     /// <summary>

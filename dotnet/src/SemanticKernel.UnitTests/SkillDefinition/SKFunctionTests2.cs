@@ -13,6 +13,8 @@ using Xunit;
 
 namespace SemanticKernel.UnitTests.SkillDefinition;
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to throw exceptions.
+
 public sealed class SKFunctionTests2
 {
     private readonly Mock<ILogger> _log;

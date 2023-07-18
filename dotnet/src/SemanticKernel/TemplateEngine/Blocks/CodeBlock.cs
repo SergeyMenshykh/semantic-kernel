@@ -12,6 +12,9 @@ namespace Microsoft.SemanticKernel.TemplateEngine.Blocks;
 
 #pragma warning disable CA2254 // error strings are used also internally, not just for logging
 // ReSharper disable TemplateIsNotCompileTimeConstantProblem
+
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to no longer use obsolete exception types.
+
 internal sealed class CodeBlock : Block, ICodeRendering
 {
     internal override BlockTypes Type => BlockTypes.Code;

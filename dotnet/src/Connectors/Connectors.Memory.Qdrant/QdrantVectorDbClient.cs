@@ -17,6 +17,8 @@ using Microsoft.SemanticKernel.Connectors.Memory.Qdrant.Http.ApiSchema;
 
 namespace Microsoft.SemanticKernel.Connectors.Memory.Qdrant;
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to no longer use obsolete exception types.
+
 /// <summary>
 /// An implementation of a client for the Qdrant Vector Database. This class is used to
 /// connect, create, delete, and get embeddings data from a Qdrant Vector Database instance.

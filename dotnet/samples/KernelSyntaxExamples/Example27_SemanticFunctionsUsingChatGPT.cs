@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.SemanticKernel;
 using RepoUtils;
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to throw exceptions.
+
 /**
  * This example shows how to use GPT3.5 Chat model for prompts and semantic functions.
  */

@@ -12,6 +12,8 @@ using Microsoft.SemanticKernel.Skills.MsGraph.Connectors.Exceptions;
 
 namespace Microsoft.SemanticKernel.Skills.MsGraph.Connectors;
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to no longer use obsolete exception types.
+
 /// <summary>
 /// Connector for OneDrive API
 /// </summary>

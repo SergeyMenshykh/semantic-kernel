@@ -16,6 +16,8 @@ using Xunit;
 
 namespace SemanticKernel.Extensions.UnitTests.Planning.ActionPlanner;
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to no longer use obsolete exception types.
+
 public sealed class ActionPlannerTests
 {
     [Fact]

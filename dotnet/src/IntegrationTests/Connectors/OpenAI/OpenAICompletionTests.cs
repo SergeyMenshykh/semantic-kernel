@@ -19,6 +19,8 @@ namespace SemanticKernel.IntegrationTests.Connectors.OpenAI;
 
 #pragma warning disable xUnit1004 // Contains test methods used in manual verification. Disable warning for this file only.
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to no longer use obsolete exception types.
+
 public sealed class OpenAICompletionTests : IDisposable
 {
     private readonly IConfigurationRoot _configuration;

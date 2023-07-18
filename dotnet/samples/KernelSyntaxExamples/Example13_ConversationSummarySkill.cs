@@ -11,6 +11,8 @@ using RepoUtils;
 
 // ReSharper disable once InconsistentNaming
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to throw exceptions.
+
 internal static class Example13_ConversationSummarySkill
 {
     private const string ChatTranscript =

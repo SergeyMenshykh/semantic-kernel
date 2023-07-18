@@ -5,6 +5,8 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.SemanticKernel.SkillDefinition;
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to no longer use obsolete exception types.
+
 [DebuggerDisplay("Count = 0")]
 internal sealed class NullReadOnlySkillCollection : IReadOnlySkillCollection
 {

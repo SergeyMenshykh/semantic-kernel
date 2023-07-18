@@ -8,6 +8,8 @@ using Microsoft.SemanticKernel.SkillDefinition;
 
 namespace SemanticKernel.UnitTests;
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to throw exceptions.
+
 /// <summary>Test helpers for working with native functions.</summary>
 internal static class FunctionHelpers
 {

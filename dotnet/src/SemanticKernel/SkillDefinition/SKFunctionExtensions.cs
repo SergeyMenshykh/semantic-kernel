@@ -9,6 +9,8 @@ using Microsoft.SemanticKernel.Orchestration;
 
 namespace Microsoft.SemanticKernel.SkillDefinition;
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to throw exceptions.
+
 /// <summary>
 /// Class that holds extension methods for objects implementing ISKFunction.
 /// </summary>

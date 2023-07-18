@@ -20,6 +20,8 @@ using Microsoft.SemanticKernel.SkillDefinition;
 namespace Microsoft.SemanticKernel.Planning;
 #pragma warning restore IDE0130
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to no longer use obsolete exception types.
+
 /// <summary>
 /// Action Planner allows to select one function out of many, to achieve a given goal.
 /// The planner implement the Intent Detection pattern, uses the functions registered

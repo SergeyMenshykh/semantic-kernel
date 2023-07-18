@@ -12,6 +12,8 @@ using Xunit;
 
 namespace SemanticKernel.IntegrationTests.Connectors.Weaviate;
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to no longer use obsolete exception types.
+
 /// <summary>
 /// Tests for <see cref="WeaviateMemoryStore" /> collection and upsert operations.
 /// These tests can be run by launching a Weaviate instance using the docker-compose.yml file found in this directory.

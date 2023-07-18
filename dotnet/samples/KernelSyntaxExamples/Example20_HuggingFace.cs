@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.SemanticKernel;
 using RepoUtils;
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to throw exceptions.
+
 /**
  * The following example shows how to use Semantic Kernel with HuggingFace API.
  */

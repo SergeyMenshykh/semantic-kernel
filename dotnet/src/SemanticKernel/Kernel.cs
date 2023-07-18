@@ -18,6 +18,8 @@ using Microsoft.SemanticKernel.TemplateEngine;
 
 namespace Microsoft.SemanticKernel;
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to no longer use obsolete exception types.
+
 /// <summary>
 /// Semantic kernel class.
 /// The kernel provides a skill collection to define native and semantic functions, an orchestrator to execute a list of functions.
@@ -144,26 +146,32 @@ public sealed class Kernel : IKernel, IDisposable
     }
 
     /// <inheritdoc/>
+    [Obsolete("This method is not obsolete; however, please be aware that in the upcoming SK SDK versions, it will begin to throw SKException and its derivatives, in addition to the standard .NET exceptions. Therefore, ensure that you have proper exception handling in place.")]
     public Task<SKContext> RunAsync(params ISKFunction[] pipeline)
         => this.RunAsync(new ContextVariables(), pipeline);
 
     /// <inheritdoc/>
+    [Obsolete("This method is not obsolete; however, please be aware that in the upcoming SK SDK versions, it will begin to throw SKException and its derivatives, in addition to the standard .NET exceptions. Therefore, ensure that you have proper exception handling in place.")]
     public Task<SKContext> RunAsync(string input, params ISKFunction[] pipeline)
         => this.RunAsync(new ContextVariables(input), pipeline);
 
     /// <inheritdoc/>
+    [Obsolete("This method is not obsolete; however, please be aware that in the upcoming SK SDK versions, it will begin to throw SKException and its derivatives, in addition to the standard .NET exceptions. Therefore, ensure that you have proper exception handling in place.")]
     public Task<SKContext> RunAsync(ContextVariables variables, params ISKFunction[] pipeline)
         => this.RunAsync(variables, CancellationToken.None, pipeline);
 
     /// <inheritdoc/>
+    [Obsolete("This method is not obsolete; however, please be aware that in the upcoming SK SDK versions, it will begin to throw SKException and its derivatives, in addition to the standard .NET exceptions. Therefore, ensure that you have proper exception handling in place.")]
     public Task<SKContext> RunAsync(CancellationToken cancellationToken, params ISKFunction[] pipeline)
         => this.RunAsync(new ContextVariables(), cancellationToken, pipeline);
 
     /// <inheritdoc/>
+    [Obsolete("This method is not obsolete; however, please be aware that in the upcoming SK SDK versions, it will begin to throw SKException and its derivatives, in addition to the standard .NET exceptions. Therefore, ensure that you have proper exception handling in place.")]
     public Task<SKContext> RunAsync(string input, CancellationToken cancellationToken, params ISKFunction[] pipeline)
         => this.RunAsync(new ContextVariables(input), cancellationToken, pipeline);
 
     /// <inheritdoc/>
+    [Obsolete("This method is not obsolete; however, please be aware that in the upcoming SK SDK versions, it will begin to throw SKException and its derivatives, in addition to the standard .NET exceptions. Therefore, ensure that you have proper exception handling in place.")]
     public async Task<SKContext> RunAsync(ContextVariables variables, CancellationToken cancellationToken, params ISKFunction[] pipeline)
     {
         var context = new SKContext(

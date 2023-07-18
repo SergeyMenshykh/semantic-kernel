@@ -11,6 +11,8 @@ using ProtoBuf;
 
 namespace Microsoft.SemanticKernel.Skills.Grpc.Protobuf;
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to no longer use obsolete exception types.
+
 /// <summary>
 /// Parser for .proto definition documents.
 /// </summary>

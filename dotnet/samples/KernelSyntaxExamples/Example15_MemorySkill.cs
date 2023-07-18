@@ -8,6 +8,8 @@ using Microsoft.SemanticKernel.SkillDefinition;
 using Microsoft.SemanticKernel.Skills.Core;
 using RepoUtils;
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to throw exceptions.
+
 // ReSharper disable once InconsistentNaming
 public static class Example15_MemorySkill
 {

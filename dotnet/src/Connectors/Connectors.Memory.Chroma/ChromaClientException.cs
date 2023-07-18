@@ -8,6 +8,7 @@ namespace Microsoft.SemanticKernel.Connectors.Memory.Chroma;
 /// <summary>
 /// Exception to identify issues in <see cref="ChromaClient"/> class.
 /// </summary>
+[Obsolete("This class is deprecated and will be removed in one of the upcoming SK SDK versions. Instead, please expect an SKException or one of its derivatives.")]
 public class ChromaClientException : Exception
 {
     private const string CollectionDoesNotExistErrorFormat = "Collection {0} does not exist";

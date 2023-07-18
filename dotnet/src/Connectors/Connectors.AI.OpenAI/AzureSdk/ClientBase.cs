@@ -18,6 +18,8 @@ using Microsoft.SemanticKernel.Text;
 
 namespace Microsoft.SemanticKernel.Connectors.AI.OpenAI.AzureSdk;
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to no longer use obsolete exception types.
+
 #pragma warning disable CA2208 // Instantiate argument exceptions correctly
 
 public abstract class ClientBase

@@ -13,6 +13,8 @@ using Xunit.Abstractions;
 
 namespace SemanticKernel.IntegrationTests.WebSkill;
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to throw exceptions.
+
 public sealed class WebSkillTests : IDisposable
 {
     private readonly string _bingApiKey;

@@ -11,6 +11,8 @@ using NCalc;
 
 namespace NCalcSkills;
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to throw exceptions.
+
 /// <summary>
 /// Skill that enables the comprehension of mathematical problems presented in English / natural-language text, followed by the execution of the necessary calculations to solve those problems.
 /// </summary>

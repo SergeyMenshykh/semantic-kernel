@@ -11,6 +11,8 @@ using Microsoft.SemanticKernel.Diagnostics;
 
 namespace Microsoft.SemanticKernel.SkillDefinition;
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to no longer use obsolete exception types.
+
 /// <summary>
 /// Semantic Kernel default skill collection class.
 /// The class holds a list of all the functions, native and semantic, known to the kernel instance.

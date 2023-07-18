@@ -14,6 +14,8 @@ using Xunit;
 
 namespace SemanticKernel.UnitTests.SkillDefinition;
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to throw exceptions.
+
 public class SKContextTests
 {
     private readonly Mock<IReadOnlySkillCollection> _skills;

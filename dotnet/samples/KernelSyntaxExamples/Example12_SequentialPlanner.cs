@@ -12,6 +12,9 @@ using Skills;
 
 // ReSharper disable CommentTypo
 // ReSharper disable once InconsistentNaming
+
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to throw exceptions.
+
 internal static class Example12_SequentialPlanner
 {
     public static async Task RunAsync()

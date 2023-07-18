@@ -15,6 +15,8 @@ using Microsoft.SemanticKernel.Connectors.Memory.Chroma.Http.ApiSchema.Internal;
 
 namespace Microsoft.SemanticKernel.Connectors.Memory.Chroma;
 
+#pragma warning disable CS0618 // Temporarily suppressing obsoletion warnings until the code is refactored to no longer use obsolete exception types.
+
 /// <summary>
 /// An implementation of a client for the Chroma Vector DB. This class is used to
 /// create, delete, and get embeddings data from Chroma Vector DB instance.

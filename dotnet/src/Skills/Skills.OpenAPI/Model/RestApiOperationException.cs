@@ -7,6 +7,7 @@ namespace Microsoft.SemanticKernel.Skills.OpenAPI.Model;
 /// <summary>
 /// Exception to be throw if a REST API operation has failed. E.g. mandatory property is missing or empty, value is out of range
 /// </summary>
+[Obsolete("This class is deprecated and will be removed in one of the upcoming SK SDK versions. Instead, please expect an SKException or one of its derivatives.")]
 public class RestApiOperationException : Exception
 {
     /// <summary>

@@ -10,6 +10,7 @@ namespace Microsoft.SemanticKernel.Planning;
 /// <summary>
 /// Exception thrown for errors related to planning.
 /// </summary>
+[Obsolete("This class is deprecated and will be removed in one of the upcoming SK SDK versions. Instead, please expect an SKException or one of its derivatives.")]
 public class PlanningException : SKException
 {
     /// <summary>
@@ -57,6 +58,7 @@ public class PlanningException : SKException
     /// <summary>
     /// Error codes for <see cref="PlanningException"/>.
     /// </summary>
+    [Obsolete("This enum is deprecated and will be removed in one of the upcoming SK SDK versions.")]
     public enum ErrorCodes
     {
         /// <summary>
