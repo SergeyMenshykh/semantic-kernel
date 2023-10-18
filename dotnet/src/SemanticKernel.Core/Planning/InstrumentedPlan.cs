@@ -9,8 +9,8 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.SemanticKernel.AI;
-using Microsoft.SemanticKernel.AI.TextCompletion;
 using Microsoft.SemanticKernel.Orchestration;
+using Microsoft.SemanticKernel.Services;
 
 namespace Microsoft.SemanticKernel.Planning;
 
@@ -65,7 +65,7 @@ public sealed class InstrumentedPlan : IPlan
         this._plan.SetAIConfiguration(requestSettings);
 
     /// <inheritdoc/>
-    public ISKFunction SetAIService(Func<ITextCompletion> serviceFactory) =>
+    public ISKFunction SetAIService(Func<IAIService> serviceFactory) =>
         this._plan.SetAIService(serviceFactory);
 
     /// <inheritdoc/>

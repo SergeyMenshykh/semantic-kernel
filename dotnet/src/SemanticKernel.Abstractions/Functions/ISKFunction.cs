@@ -5,8 +5,8 @@ using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.SemanticKernel.AI;
-using Microsoft.SemanticKernel.AI.TextCompletion;
 using Microsoft.SemanticKernel.Orchestration;
+using Microsoft.SemanticKernel.Services;
 
 #pragma warning disable IDE0130
 // ReSharper disable once CheckNamespace - Using the main namespace
@@ -70,7 +70,7 @@ public interface ISKFunction
     /// </summary>
     /// <param name="serviceFactory">AI service factory</param>
     /// <returns>Self instance</returns>
-    ISKFunction SetAIService(Func<ITextCompletion> serviceFactory);
+    ISKFunction SetAIService(Func<IAIService> serviceFactory);
 
     /// <summary>
     /// Set the AI completion settings used with LLM requests

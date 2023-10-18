@@ -11,9 +11,9 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.SemanticKernel.AI;
-using Microsoft.SemanticKernel.AI.TextCompletion;
 using Microsoft.SemanticKernel.Diagnostics;
 using Microsoft.SemanticKernel.Orchestration;
+using Microsoft.SemanticKernel.Services;
 
 namespace Microsoft.SemanticKernel.Planning;
 
@@ -366,7 +366,7 @@ public sealed class Plan : IPlan
     }
 
     /// <inheritdoc/>
-    public ISKFunction SetAIService(Func<ITextCompletion> serviceFactory)
+    public ISKFunction SetAIService(Func<IAIService> serviceFactory)
     {
         return this.Function is not null ? this.Function.SetAIService(serviceFactory) : this;
     }

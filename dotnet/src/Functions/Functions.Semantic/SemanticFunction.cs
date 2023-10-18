@@ -6,14 +6,17 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.SemanticKernel.AI;
+using Microsoft.SemanticKernel.AI.ChatCompletion;
 using Microsoft.SemanticKernel.AI.TextCompletion;
 using Microsoft.SemanticKernel.Diagnostics;
 using Microsoft.SemanticKernel.Orchestration;
+using Microsoft.SemanticKernel.Services;
 using Microsoft.SemanticKernel.TemplateEngine;
 
 #pragma warning disable IDE0130
@@ -104,10 +107,10 @@ internal sealed class SemanticFunction : ISKFunction, IDisposable
     }
 
     /// <inheritdoc/>
-    public ISKFunction SetAIService(Func<ITextCompletion> serviceFactory)
+    public ISKFunction SetAIService(Func<IAIService> serviceFactory)
     {
         Verify.NotNull(serviceFactory);
-        this._aiService = new Lazy<ITextCompletion>(serviceFactory);
+        this._aiService = new Lazy<IAIService>(serviceFactory);
         return this;
     }
 
@@ -170,7 +173,7 @@ internal sealed class SemanticFunction : ISKFunction, IDisposable
     private static readonly JsonSerializerOptions s_toStringIndentedSerialization = new() { WriteIndented = true };
     private readonly ILogger _logger;
     private IReadOnlyFunctionCollection? _functionCollection;
-    private Lazy<ITextCompletion>? _aiService;
+    private Lazy<IAIService>? _aiService;
     private readonly Lazy<FunctionView> _view;
     public IPromptTemplate _promptTemplate { get; }
 
@@ -196,27 +199,52 @@ internal sealed class SemanticFunction : ISKFunction, IDisposable
     }
 
     private async Task<FunctionResult> RunPromptAsync(
-        ITextCompletion? client,
+        IAIService? aiService,
         AIRequestSettings? requestSettings,
         SKContext context,
         CancellationToken cancellationToken)
     {
-        Verify.NotNull(client);
+        Verify.NotNull(aiService);
 
         FunctionResult result;
+        ModelResult[] modelResults;
 
         try
         {
-            string renderedPrompt = await this._promptTemplate.RenderAsync(context, cancellationToken).ConfigureAwait(false);
-            IReadOnlyList<ITextResult> completionResults = await client.GetCompletionsAsync(renderedPrompt, requestSettings, cancellationToken).ConfigureAwait(false);
-            string completion = await GetCompletionsResultContentAsync(completionResults, cancellationToken).ConfigureAwait(false);
+            var prompt = await this._promptTemplate.RenderAsync(context, cancellationToken).ConfigureAwait(false);
 
-            // Update the result with the completion
-            context.Variables.Update(completion);
+            bool containsRoleElement = Regex.IsMatch(prompt, "##role:\\w+##");
 
-            var modelResults = completionResults.Select(c => c.ModelResult).ToArray();
+            if (aiService is IChatCompletion chatCompletion && containsRoleElement)
+            {
+                var chatHistory = chatCompletion.CreateNewChat(prompt);
 
-            result = new FunctionResult(this.Name, this.PluginName, context, completion);
+                var completionResults = await chatCompletion.GetChatCompletionsAsync(chatHistory, requestSettings, cancellationToken).ConfigureAwait(false);
+
+                var chatMessageResponse = await completionResults[0].GetChatMessageAsync(cancellationToken).ConfigureAwait(false);
+
+                context.Variables.Update(chatMessageResponse.Content);
+
+                modelResults = completionResults.Select(c => c.ModelResult).ToArray();
+
+                result = new FunctionResult(this.Name, this.PluginName, context, chatMessageResponse.Content);
+            }
+            else if (aiService is ITextCompletion textCompletion)
+            {
+                var completionResults = await textCompletion.GetCompletionsAsync(prompt, requestSettings, cancellationToken).ConfigureAwait(false);
+
+                var completion = await GetCompletionsResultContentAsync(completionResults, cancellationToken).ConfigureAwait(false);
+
+                context.Variables.Update(completion);
+
+                modelResults = completionResults.Select(c => c.ModelResult).ToArray();
+
+                result = new FunctionResult(this.Name, this.PluginName, context, completion);
+            }
+            else
+            {
+                throw new SKException($"Unexpected AI service type - {aiService?.GetType()}");
+            }
 
             result.Metadata.Add(AIFunctionResultExtensions.ModelResultsMetadataKey, modelResults);
         }

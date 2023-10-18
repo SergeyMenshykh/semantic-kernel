@@ -11,7 +11,7 @@ namespace Microsoft.SemanticKernel.AI.ChatCompletion;
 /// </summary>
 public class ChatHistory : List<ChatMessageBase>
 {
-    private sealed class ChatMessage : ChatMessageBase
+    protected sealed class ChatMessage : ChatMessageBase
     {
         public ChatMessage(AuthorRole authorRole, string content) : base(authorRole, content)
         {

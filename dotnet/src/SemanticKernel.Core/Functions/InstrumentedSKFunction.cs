@@ -9,8 +9,8 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.SemanticKernel.AI;
-using Microsoft.SemanticKernel.AI.TextCompletion;
 using Microsoft.SemanticKernel.Orchestration;
+using Microsoft.SemanticKernel.Services;
 
 #pragma warning disable IDE0130
 // ReSharper disable once CheckNamespace - Using the main namespace
@@ -83,7 +83,7 @@ public sealed class InstrumentedSKFunction : ISKFunction
         this._function.SetAIConfiguration(requestSettings);
 
     /// <inheritdoc/>
-    public ISKFunction SetAIService(Func<ITextCompletion> serviceFactory) =>
+    public ISKFunction SetAIService(Func<IAIService> serviceFactory) =>
         this._function.SetAIService(serviceFactory);
 
     /// <inheritdoc/>
