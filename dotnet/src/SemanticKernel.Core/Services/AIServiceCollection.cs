@@ -7,7 +7,7 @@ using System.Linq;
 namespace Microsoft.SemanticKernel.Services;
 
 /// <summary>
-/// A collection of AI services that can be registered and built into an <see cref="IAIServiceProvider"/>.
+/// A collection of AI services that can be registered and built into an.
 /// </summary>
 [System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1711:Identifiers should not have incorrect suffix")]
 public class AIServiceCollection
@@ -27,7 +27,7 @@ public class AIServiceCollection
     /// <typeparam name="T">The type of the service.</typeparam>
     /// <param name="service">The service instance.</param>
     /// <exception cref="ArgumentNullException">The service instance is null.</exception>
-    public void SetService<T>(T service) where T : IAIService
+    public void SetService<T>(T service)
         => this.SetService(DefaultKey, service, true);
 
     /// <summary>
@@ -39,7 +39,7 @@ public class AIServiceCollection
     /// <param name="setAsDefault">Whether the service should be the default for its type.</param>
     /// <exception cref="ArgumentNullException">The service instance is null.</exception>
     /// <exception cref="ArgumentException">The name is empty or whitespace.</exception>
-    public void SetService<T>(string? name, T service, bool setAsDefault = false) where T : IAIService
+    public void SetService<T>(string? name, T service, bool setAsDefault = false)
         => this.SetService<T>(name, (() => service), setAsDefault);
 
     /// <summary>
@@ -48,7 +48,7 @@ public class AIServiceCollection
     /// <typeparam name="T">The type of the service.</typeparam>
     /// <param name="factory">The factory function to create the service instance.</param>
     /// <exception cref="ArgumentNullException">The factory function is null.</exception>
-    public void SetService<T>(Func<T> factory) where T : IAIService
+    public void SetService<T>(Func<T> factory)
         => this.SetService<T>(DefaultKey, factory, true);
 
     /// <summary>
@@ -60,7 +60,7 @@ public class AIServiceCollection
     /// <param name="setAsDefault">Whether the service should be the default for its type.</param>
     /// <exception cref="ArgumentNullException">The factory function is null.</exception>
     /// <exception cref="ArgumentException">The name is empty or whitespace.</exception>
-    public void SetService<T>(string? name, Func<T> factory, bool setAsDefault = false) where T : IAIService
+    public void SetService<T>(string? name, Func<T> factory, bool setAsDefault = false)
     {
         // Validate the factory function
         if (factory == null)
@@ -92,10 +92,10 @@ public class AIServiceCollection
     }
 
     /// <summary>
-    /// Builds an <see cref="IAIServiceProvider"/> from the registered services and default names.
+    /// Builds an from the registered services and default names.
     /// </summary>
-    /// <returns>An <see cref="IAIServiceProvider"/> containing the registered services.</returns>
-    public IAIServiceProvider Build()
+    /// <returns>An containing the registered services.</returns>
+    public INamedServiceProvider Build()
     {
         // Create a clone of the services and defaults Dictionaries to prevent further changes
         // by the services provider.
@@ -109,10 +109,10 @@ public class AIServiceCollection
             typeDefault => typeDefault.Key,
             typeDefault => typeDefault.Value);
 
-        return new AIServiceProvider(servicesClone, defaultsClone);
+        return new NamedServiceProvider(servicesClone, defaultsClone);
     }
 
-    private bool HasDefault<T>() where T : IAIService
+    private bool HasDefault<T>()
         => this._defaultIds.TryGetValue(typeof(T), out var defaultName)
             && !string.IsNullOrEmpty(defaultName);
 }

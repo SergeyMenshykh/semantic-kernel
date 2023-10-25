@@ -14,7 +14,7 @@ namespace SemanticKernel.UnitTests.Orchestration;
 public class FunctionResultTests
 {
     private readonly Mock<IFunctionRunner> _functionRunner = new();
-    private readonly Mock<IAIServiceProvider> _serviceProvider = new();
+    private readonly Mock<INamedServiceProvider> _serviceProvider = new();
 
     private SKContext CreateContext()
     {

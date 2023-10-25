@@ -58,7 +58,7 @@ public class ReadOnlyFunctionCollectionExtensionsTests
             .Returns(asyncEnumerable);
 
         var functionRunner = new Mock<IFunctionRunner>();
-        var serviceProvider = new Mock<IAIServiceProvider>();
+        var serviceProvider = new Mock<INamedServiceProvider>();
 
         // Arrange GetAvailableFunctionsAsync parameters
         var context = new SKContext(functionRunner.Object, serviceProvider.Object, variables);
@@ -138,7 +138,7 @@ public class ReadOnlyFunctionCollectionExtensionsTests
         functions.Setup(x => x.GetFunctionViews()).Returns(functionsView);
 
         var functionRunner = new Mock<IFunctionRunner>();
-        var serviceProvider = new Mock<IAIServiceProvider>();
+        var serviceProvider = new Mock<INamedServiceProvider>();
 
         // Arrange GetAvailableFunctionsAsync parameters
         var context = new SKContext(functionRunner.Object, serviceProvider.Object, variables, functions.Object);
@@ -209,7 +209,7 @@ public class ReadOnlyFunctionCollectionExtensionsTests
         functions.Setup(x => x.GetFunctionViews()).Returns(functionsView);
 
         var functionRunner = new Mock<IFunctionRunner>();
-        var serviceProvider = new Mock<IAIServiceProvider>();
+        var serviceProvider = new Mock<INamedServiceProvider>();
 
         // Arrange GetAvailableFunctionsAsync parameters
         var context = new SKContext(functionRunner.Object, serviceProvider.Object, variables, functions.Object);
@@ -247,7 +247,7 @@ public class ReadOnlyFunctionCollectionExtensionsTests
         // Arrange
         var kernel = new Mock<IKernel>();
         var functionRunner = new Mock<IFunctionRunner>();
-        var serviceProvider = new Mock<IAIServiceProvider>();
+        var serviceProvider = new Mock<INamedServiceProvider>();
 
         var variables = new ContextVariables();
         var functions = new FunctionCollection();

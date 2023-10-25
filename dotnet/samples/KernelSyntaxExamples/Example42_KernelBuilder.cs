@@ -96,7 +96,7 @@ public static class Example42_KernelBuilder
             httpClient,
             loggerFactory);
         aiServices.SetService("foo", Factory);
-        IAIServiceProvider aiServiceProvider = aiServices.Build();
+        INamedServiceProvider aiServiceProvider = aiServices.Build();
 
         // Create kernel manually injecting all the dependencies
         using var kernel3 = new Kernel(plugins, aiServiceProvider, templateEngine, memory, httpHandlerFactory, loggerFactory);

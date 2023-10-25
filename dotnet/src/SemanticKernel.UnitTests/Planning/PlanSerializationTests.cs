@@ -19,7 +19,7 @@ namespace SemanticKernel.UnitTests.Planning;
 public sealed class PlanSerializationTests
 {
     private readonly Mock<IFunctionRunner> _functionRunner = new();
-    private readonly Mock<IAIServiceProvider> _serviceProvider = new();
+    private readonly Mock<INamedServiceProvider> _serviceProvider = new();
 
     [Fact]
     public void CanSerializePlan()

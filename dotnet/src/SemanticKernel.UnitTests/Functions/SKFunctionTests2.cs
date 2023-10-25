@@ -1045,7 +1045,7 @@ public sealed class SKFunctionTests2
     private SKContext MockContext(string input)
     {
         var functionRunner = new Mock<IFunctionRunner>();
-        var serviceProvider = new Mock<IAIServiceProvider>();
+        var serviceProvider = new Mock<INamedServiceProvider>();
 
         return new SKContext(
             functionRunner.Object,

@@ -55,7 +55,7 @@ public sealed class PlanTests
         var goal = "Write a poem or joke and send it in an e-mail to Kai.";
         var plan = new Plan(goal);
         var functionRunner = new Mock<IFunctionRunner>();
-        var serviceProvider = new Mock<IAIServiceProvider>();
+        var serviceProvider = new Mock<INamedServiceProvider>();
 
         var context = new SKContext(functionRunner.Object, serviceProvider.Object, new ContextVariables("Some input"));
 
@@ -827,13 +827,13 @@ Previously:Outline section #1 of 3: Here is a 3 chapter outline about NovelOutli
         Assert.Equal(expected, result.GetValue<string>());
     }
 
-    private (Mock<IKernel> kernelMock, Mock<IFunctionRunner> functionRunnerMock, Mock<IAIServiceProvider> serviceProviderMock) SetupKernelMock(IFunctionCollection? functions = null)
+    private (Mock<IKernel> kernelMock, Mock<IFunctionRunner> functionRunnerMock, Mock<INamedServiceProvider> serviceProviderMock) SetupKernelMock(IFunctionCollection? functions = null)
     {
         functions ??= new Mock<IFunctionCollection>().Object;
 
         var kernel = new Mock<IKernel>();
         var functionRunner = new Mock<IFunctionRunner>();
-        var serviceProvider = new Mock<IAIServiceProvider>();
+        var serviceProvider = new Mock<INamedServiceProvider>();
 
         kernel.SetupGet(x => x.Functions).Returns(functions);
         kernel.Setup(k => k.CreateNewContext(It.IsAny<ContextVariables>(), It.IsAny<IReadOnlyFunctionCollection>(), It.IsAny<ILoggerFactory>(), It.IsAny<CultureInfo>()))

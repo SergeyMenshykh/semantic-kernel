@@ -80,7 +80,7 @@ public interface IKernel
     /// <param name="name">Optional name. If the name is not provided, returns the default T available</param>
     /// <typeparam name="T">Service type</typeparam>
     /// <returns>Instance of T</returns>
-    T GetService<T>(string? name = null) where T : IAIService;
+    T GetService<T>(string? name = null);
 
     /// <summary>
     /// Used for registering a function invoking event handler.

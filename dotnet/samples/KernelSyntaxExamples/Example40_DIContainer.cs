@@ -84,7 +84,7 @@ public static class Example40_DIContainer
         collection.AddTransient<IFunctionCollection, FunctionCollection>();
         collection.AddTransient<IPromptTemplateEngine, BasicPromptTemplateEngine>();
         collection.AddTransient<ISemanticTextMemory>((_) => NullMemory.Instance);
-        collection.AddTransient<IAIServiceProvider>((_) => aiServicesCollection.Build()); //Registering AI service provider that is used by Kernel to resolve AI services runtime
+        collection.AddTransient<INamedServiceProvider>((_) => aiServicesCollection.Build()); //Registering AI service provider that is used by Kernel to resolve AI services runtime
 
         //Registering Kernel
         collection.AddTransient<IKernel, Kernel>();

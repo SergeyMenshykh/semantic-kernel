@@ -62,7 +62,7 @@ public sealed class SKContext
     /// <summary>
     /// AI service provider
     /// </summary>
-    public IAIServiceProvider ServiceProvider { get; }
+    public INamedServiceProvider ServiceProvider { get; }
 
     /// <summary>
     /// Constructor for the context.
@@ -75,7 +75,7 @@ public sealed class SKContext
     /// <param name="culture">Culture related to the context</param>
     internal SKContext(
         IFunctionRunner functionRunner,
-        IAIServiceProvider serviceProvider,
+        INamedServiceProvider serviceProvider,
         ContextVariables? variables = null,
         IReadOnlyFunctionCollection? functions = null,
         ILoggerFactory? loggerFactory = null,

@@ -39,7 +39,7 @@ public class SequentialPlanParserTests
 
     private SKContext CreateSKContext(
         IFunctionRunner functionRunner,
-        IAIServiceProvider serviceProvider,
+        INamedServiceProvider serviceProvider,
         ContextVariables? variables = null)
     {
         return new SKContext(functionRunner, serviceProvider, variables);
@@ -61,7 +61,7 @@ public class SequentialPlanParserTests
         kernel = kernelMock.Object;
 
         var functionRunnerMock = new Mock<IFunctionRunner>();
-        var serviceProviderMock = new Mock<IAIServiceProvider>();
+        var serviceProviderMock = new Mock<INamedServiceProvider>();
 
         // For Create
         kernelMock.Setup(k => k.CreateNewContext(It.IsAny<ContextVariables>(), It.IsAny<IReadOnlyFunctionCollection>(), It.IsAny<ILoggerFactory>(), It.IsAny<CultureInfo>()))

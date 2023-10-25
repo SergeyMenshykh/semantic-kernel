@@ -33,13 +33,13 @@ public class OrderedIAIServiceConfigurationProviderTests
     {
         // Arrange
         var serviceCollection = new AIServiceCollection();
-        serviceCollection.SetService<IAIService>(new AIService());
+        serviceCollection.SetService<ITestService>(new TestService());
         var serviceProvider = serviceCollection.Build();
         var modelSettings = new List<AIRequestSettings>();
         var configurationProvider = new OrderedIAIServiceSelector();
 
         // Act
-        (var aiService, var defaultRequestSettings) = configurationProvider.SelectAIService<IAIService>(serviceProvider, modelSettings);
+        (var aiService, var defaultRequestSettings) = configurationProvider.SelectAIService<ITestService>(serviceProvider, modelSettings);
 
         // Assert
         Assert.NotNull(aiService);
@@ -212,7 +212,11 @@ public class OrderedIAIServiceConfigurationProviderTests
     }
 
     #region private
-    private sealed class AIService : IAIService
+
+
+    private interface ITestService { }
+
+    private sealed class TestService : ITestService
     {
     }
 

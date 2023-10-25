@@ -16,7 +16,6 @@ using Microsoft.SemanticKernel.AI.TextCompletion;
 using Microsoft.SemanticKernel.Diagnostics;
 using Microsoft.SemanticKernel.Orchestration;
 using Microsoft.SemanticKernel.Planning;
-using Microsoft.SemanticKernel.Services;
 using Microsoft.SemanticKernel.TemplateEngine;
 using Microsoft.SemanticKernel.TemplateEngine.Basic;
 
@@ -110,7 +109,7 @@ public class StepwisePlanner : IStepwisePlanner
             return context;
         }
 
-        ChatHistory chatHistory = await this.InitializeChatHistoryAsync(this.CreateChatHistory(this._kernel, out var aiService), aiService, question, context, cancellationToken).ConfigureAwait(false);
+        ChatHistory chatHistory = await this.InitializeChatHistoryAsync(this.CreateChatHistory(this._kernel, out var aiService), question, context, cancellationToken).ConfigureAwait(false);
 
         if (aiService is null)
         {
@@ -311,7 +310,7 @@ public class StepwisePlanner : IStepwisePlanner
 
     #region setup helpers
 
-    private async Task<ChatHistory> InitializeChatHistoryAsync(ChatHistory chatHistory, IAIService aiService, string question, SKContext context, CancellationToken cancellationToken)
+    private async Task<ChatHistory> InitializeChatHistoryAsync(ChatHistory chatHistory, string question, SKContext context, CancellationToken cancellationToken)
     {
         string userManual = await this.GetUserManualAsync(question, context, cancellationToken).ConfigureAwait(false);
         string userQuestion = await this.GetUserQuestionAsync(context, cancellationToken).ConfigureAwait(false);
@@ -328,7 +327,7 @@ public class StepwisePlanner : IStepwisePlanner
         return chatHistory;
     }
 
-    private ChatHistory CreateChatHistory(IKernel kernel, out IAIService aiService)
+    private ChatHistory CreateChatHistory(IKernel kernel, out object aiService)
     {
         ChatHistory chatHistory;
         if (TryGetChatCompletion(this._kernel, out var chatCompletion))
@@ -363,7 +362,7 @@ public class StepwisePlanner : IStepwisePlanner
 
     #region execution helpers
 
-    private Task<string> GetNextStepCompletionAsync(List<SystemStep> stepsTaken, ChatHistory chatHistory, IAIService aiService, int startingMessageCount, CancellationToken token)
+    private Task<string> GetNextStepCompletionAsync(List<SystemStep> stepsTaken, ChatHistory chatHistory, object aiService, int startingMessageCount, CancellationToken token)
     {
         var skipStart = startingMessageCount;
         var skipCount = 0;
@@ -396,7 +395,7 @@ public class StepwisePlanner : IStepwisePlanner
         return this.GetCompletionAsync(aiService, reducedChatHistory, stepsTaken.Count == 0, token);
     }
 
-    private async Task<string> GetCompletionAsync(IAIService aiService, ChatHistory chatHistory, bool addThought, CancellationToken token)
+    private async Task<string> GetCompletionAsync(object aiService, ChatHistory chatHistory, bool addThought, CancellationToken token)
     {
         if (aiService is IChatCompletion chatCompletion)
         {

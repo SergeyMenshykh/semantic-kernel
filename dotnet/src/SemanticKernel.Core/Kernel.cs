@@ -67,7 +67,7 @@ public sealed class Kernel : IKernel, IDisposable
     /// <param name="loggerFactory">The <see cref="ILoggerFactory"/> to use for logging. If null, no logging will be performed.</param>
     public Kernel(
         IFunctionCollection functionCollection,
-        IAIServiceProvider aiServiceProvider,
+        INamedServiceProvider aiServiceProvider,
         IPromptTemplateEngine promptTemplateEngine,
         ISemanticTextMemory memory,
         IDelegatingHandlerFactory httpHandlerFactory,
@@ -183,7 +183,7 @@ repeat:
     }
 
     /// <inheritdoc/>
-    public T GetService<T>(string? name = null) where T : IAIService
+    public T GetService<T>(string? name = null)
     {
         var service = this._aiServiceProvider.GetService<T>(name);
         if (service != null)
@@ -211,7 +211,7 @@ repeat:
     private readonly IFunctionCollection _functionCollection;
     private ISemanticTextMemory _memory;
     private readonly IPromptTemplateEngine _promptTemplateEngine;
-    private readonly IAIServiceProvider _aiServiceProvider;
+    private readonly INamedServiceProvider _aiServiceProvider;
     private readonly ILogger _logger;
 
     /// <summary>

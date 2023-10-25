@@ -189,7 +189,7 @@ public sealed class KernelBuilder
     /// Adds a <typeparamref name="TService"/> instance to the services collection
     /// </summary>
     /// <param name="instance">The <typeparamref name="TService"/> instance.</param>
-    public KernelBuilder WithDefaultAIService<TService>(TService instance) where TService : IAIService
+    public KernelBuilder WithDefaultAIService<TService>(TService instance)
     {
         this._aiServices.SetService<TService>(instance);
         return this;
@@ -199,7 +199,7 @@ public sealed class KernelBuilder
     /// Adds a <typeparamref name="TService"/> factory method to the services collection
     /// </summary>
     /// <param name="factory">The factory method that creates the AI service instances of type <typeparamref name="TService"/>.</param>
-    public KernelBuilder WithDefaultAIService<TService>(Func<ILoggerFactory, TService> factory) where TService : IAIService
+    public KernelBuilder WithDefaultAIService<TService>(Func<ILoggerFactory, TService> factory)
     {
         this._aiServices.SetService<TService>(() => factory(this._loggerFactory));
         return this;
@@ -214,7 +214,7 @@ public sealed class KernelBuilder
     public KernelBuilder WithAIService<TService>(
         string? serviceId,
         TService instance,
-        bool setAsDefault = false) where TService : IAIService
+        bool setAsDefault = false)
     {
         this._aiServices.SetService<TService>(serviceId, instance, setAsDefault);
         return this;
@@ -229,7 +229,7 @@ public sealed class KernelBuilder
     public KernelBuilder WithAIService<TService>(
         string? serviceId,
         Func<ILoggerFactory, TService> factory,
-        bool setAsDefault = false) where TService : IAIService
+        bool setAsDefault = false)
     {
         this._aiServices.SetService<TService>(serviceId, () => factory(this._loggerFactory), setAsDefault);
         return this;
@@ -244,7 +244,7 @@ public sealed class KernelBuilder
     public KernelBuilder WithAIService<TService>(
         string? serviceId,
         Func<ILoggerFactory, IDelegatingHandlerFactory, TService> factory,
-        bool setAsDefault = false) where TService : IAIService
+        bool setAsDefault = false)
     {
         this._aiServices.SetService<TService>(serviceId, () => factory(this._loggerFactory, this._httpHandlerFactory), setAsDefault);
         return this;

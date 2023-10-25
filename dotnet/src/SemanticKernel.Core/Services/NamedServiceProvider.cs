@@ -6,10 +6,9 @@ using System.Collections.Generic;
 namespace Microsoft.SemanticKernel.Services;
 
 /// <summary>
-/// Provides named services of type <typeparamref name="TService"/>. Allows for the registration and retrieval of services by name.
+/// Provides named services of type. Allows for the registration and retrieval of services by name.
 /// </summary>
-/// <typeparam name="TService">The type of service provided by this provider.</typeparam>
-public class NamedServiceProvider<TService> : INamedServiceProvider<TService>
+public class NamedServiceProvider : INamedServiceProvider
 {
     // A dictionary that maps a service type to a nested dictionary of names and service instances or factories
     private readonly Dictionary<Type, Dictionary<string, Func<object>>> _services;
@@ -18,7 +17,7 @@ public class NamedServiceProvider<TService> : INamedServiceProvider<TService>
     private readonly Dictionary<Type, string> _defaultIds;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="NamedServiceProvider{TService}"/> class.
+    /// Initializes a new instance of the class.
     /// </summary>
     /// <param name="services">A dictionary that maps a service type to a nested dictionary of names and service instances or factories.</param>
     /// <param name="defaultIds">A dictionary that maps a service type to the name of the default service.</param>
@@ -31,7 +30,7 @@ public class NamedServiceProvider<TService> : INamedServiceProvider<TService>
     }
 
     /// <inheritdoc/>
-    public T? GetService<T>(string? name = null) where T : TService
+    public T? GetService<T>(string? name = null)
     {
         // Return the service, casting or invoking the factory if needed
         var factory = this.GetServiceFactory<T>(name);
@@ -44,7 +43,7 @@ public class NamedServiceProvider<TService> : INamedServiceProvider<TService>
     }
 
     /// <inheritdoc/>
-    private string? GetDefaultServiceName<T>() where T : TService
+    private string? GetDefaultServiceName<T>()
     {
         // Returns the name of the default service for the given type, or null if none
         var type = typeof(T);
@@ -56,7 +55,7 @@ public class NamedServiceProvider<TService> : INamedServiceProvider<TService>
         return null;
     }
 
-    private Func<T>? GetServiceFactory<T>(string? name = null) where T : TService
+    private Func<T>? GetServiceFactory<T>(string? name = null)
     {
         // Get the nested dictionary for the service type
         if (this._services.TryGetValue(typeof(T), out var namedServices))

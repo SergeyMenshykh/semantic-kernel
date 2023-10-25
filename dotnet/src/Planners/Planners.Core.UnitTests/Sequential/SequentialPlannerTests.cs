@@ -61,7 +61,7 @@ public sealed class SequentialPlannerTests
 
         functions.Setup(x => x.GetFunctionViews()).Returns(functionsView);
         var functionRunner = new Mock<IFunctionRunner>();
-        var serviceProvider = new Mock<IAIServiceProvider>();
+        var serviceProvider = new Mock<INamedServiceProvider>();
         kernel.Setup(x => x.LoggerFactory).Returns(new Mock<ILoggerFactory>().Object);
 
         var expectedFunctions = input.Select(x => x.name).ToList();
@@ -151,7 +151,7 @@ public sealed class SequentialPlannerTests
     {
         // Arrange
         var functionRunner = new Mock<IFunctionRunner>();
-        var serviceProvider = new Mock<IAIServiceProvider>();
+        var serviceProvider = new Mock<INamedServiceProvider>();
         var kernel = new Mock<IKernel>();
         var functions = new Mock<IFunctionCollection>();
 

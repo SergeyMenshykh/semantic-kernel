@@ -30,7 +30,7 @@ public sealed class PromptTemplateEngineTests
     private readonly ITestOutputHelper _logger;
     private readonly Mock<IKernel> _kernel;
     private readonly Mock<IFunctionRunner> _functionRunner;
-    private readonly Mock<IAIServiceProvider> _serviceProvider;
+    private readonly Mock<INamedServiceProvider> _serviceProvider;
 
     public PromptTemplateEngineTests(ITestOutputHelper testOutputHelper)
     {
@@ -40,7 +40,7 @@ public sealed class PromptTemplateEngineTests
         this._functions = new Mock<IReadOnlyFunctionCollection>();
         this._kernel = new Mock<IKernel>();
         this._functionRunner = new Mock<IFunctionRunner>();
-        this._serviceProvider = new Mock<IAIServiceProvider>();
+        this._serviceProvider = new Mock<INamedServiceProvider>();
     }
 
     [Fact]

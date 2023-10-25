@@ -23,7 +23,7 @@ public class SKContextTests
     {
         // Arrange
         var variables = new ContextVariables();
-        var target = new SKContext(new Mock<IFunctionRunner>().Object, new Mock<IAIServiceProvider>().Object, variables);
+        var target = new SKContext(new Mock<IFunctionRunner>().Object, new Mock<INamedServiceProvider>().Object, variables);
         variables.Set("foo1", "bar1");
 
         // Act
@@ -61,13 +61,13 @@ public class SKContextTests
         Assert.Equal("ciao", result.GetValue<string>());
     }
 
-    private (Mock<IKernel> kernelMock, Mock<IFunctionRunner> functionRunnerMock, Mock<IAIServiceProvider> serviceProviderMock) SetupKernelMock(IReadOnlyFunctionCollection? functions = null)
+    private (Mock<IKernel> kernelMock, Mock<IFunctionRunner> functionRunnerMock, Mock<INamedServiceProvider> serviceProviderMock) SetupKernelMock(IReadOnlyFunctionCollection? functions = null)
     {
         functions ??= new Mock<IFunctionCollection>().Object;
 
         var kernel = new Mock<IKernel>();
         var functionRunner = new Mock<IFunctionRunner>();
-        var serviceProvider = new Mock<IAIServiceProvider>();
+        var serviceProvider = new Mock<INamedServiceProvider>();
 
         kernel.SetupGet(x => x.Functions).Returns(functions);
         kernel.Setup(k => k.CreateNewContext(It.IsAny<ContextVariables>(), It.IsAny<IReadOnlyFunctionCollection>(), It.IsAny<ILoggerFactory>(), It.IsAny<CultureInfo>()))

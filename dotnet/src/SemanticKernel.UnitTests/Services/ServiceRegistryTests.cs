@@ -18,9 +18,9 @@ public class ServiceRegistryTests
         var service = new TestService();
 
         // Act
-        services.SetService<IAIService>(service);
+        services.SetService<ITestService>(service);
         var provider = services.Build();
-        var result = provider.GetService<IAIService>();
+        var result = provider.GetService<ITestService>();
 
         // Assert
         Assert.Same(service, result);
@@ -35,13 +35,13 @@ public class ServiceRegistryTests
         var service2 = new TestService();
 
         // Act
-        services.SetService<IAIService>("foo", service1);
-        services.SetService<IAIService>("bar", service2);
+        services.SetService<ITestService>("foo", service1);
+        services.SetService<ITestService>("bar", service2);
         var provider = services.Build();
 
         // Assert
-        Assert.Same(service1, provider.GetService<IAIService>("foo"));
-        Assert.Same(service2, provider.GetService<IAIService>("bar"));
+        Assert.Same(service1, provider.GetService<ITestService>("foo"));
+        Assert.Same(service2, provider.GetService<ITestService>("bar"));
     }
 
     [Fact]
@@ -52,11 +52,11 @@ public class ServiceRegistryTests
         var service = new TestService();
 
         // Act
-        services.SetService<IAIService>(() => service);
+        services.SetService<ITestService>(() => service);
         var provider = services.Build();
 
         // Assert
-        Assert.Same(service, provider.GetService<IAIService>());
+        Assert.Same(service, provider.GetService<ITestService>());
     }
 
     [Fact]
@@ -68,13 +68,13 @@ public class ServiceRegistryTests
         var service2 = new TestService();
 
         // Act
-        services.SetService<IAIService>("foo", () => service1);
-        services.SetService<IAIService>("bar", () => service2);
+        services.SetService<ITestService>("foo", () => service1);
+        services.SetService<ITestService>("bar", () => service2);
         var provider = services.Build();
 
         // Assert
-        Assert.Same(service1, provider.GetService<IAIService>("foo"));
-        Assert.Same(service2, provider.GetService<IAIService>("bar"));
+        Assert.Same(service1, provider.GetService<ITestService>("foo"));
+        Assert.Same(service2, provider.GetService<ITestService>("bar"));
     }
 
     [Fact]
@@ -85,11 +85,11 @@ public class ServiceRegistryTests
         var service = new TestService();
 
         // Act
-        services.SetService<IAIService>(() => service);
+        services.SetService<ITestService>(() => service);
         var provider = services.Build();
 
         // Assert
-        Assert.Same(service, provider.GetService<IAIService>());
+        Assert.Same(service, provider.GetService<ITestService>());
     }
 
     [Fact]
@@ -101,13 +101,13 @@ public class ServiceRegistryTests
         var service2 = new TestService();
 
         // Act
-        services.SetService<IAIService>("foo", () => service1);
-        services.SetService<IAIService>("bar", () => service2);
+        services.SetService<ITestService>("foo", () => service1);
+        services.SetService<ITestService>("bar", () => service2);
         var provider = services.Build();
 
         // Assert
-        Assert.Same(service1, provider.GetService<IAIService>("foo"));
-        Assert.Same(service2, provider.GetService<IAIService>("bar"));
+        Assert.Same(service1, provider.GetService<ITestService>("foo"));
+        Assert.Same(service2, provider.GetService<ITestService>("bar"));
     }
 
     [Fact]
@@ -119,12 +119,12 @@ public class ServiceRegistryTests
         var service2 = new TestService();
 
         // Act
-        services.SetService<IAIService>("foo", service1);
-        services.SetService<IAIService>("bar", service2, setAsDefault: true);
+        services.SetService<ITestService>("foo", service1);
+        services.SetService<ITestService>("bar", service2, setAsDefault: true);
         var provider = services.Build();
 
         // Assert
-        Assert.Same(service2, provider.GetService<IAIService>());
+        Assert.Same(service2, provider.GetService<ITestService>());
     }
 
     [Fact]
@@ -136,12 +136,12 @@ public class ServiceRegistryTests
         var service2 = new TestService();
 
         // Act
-        services.SetService<IAIService>("foo", () => service1);
-        services.SetService<IAIService>("bar", () => service2, setAsDefault: true);
+        services.SetService<ITestService>("foo", () => service1);
+        services.SetService<ITestService>("bar", () => service2, setAsDefault: true);
         var provider = services.Build();
 
         // Assert
-        Assert.Same(service2, provider.GetService<IAIService>());
+        Assert.Same(service2, provider.GetService<ITestService>());
     }
 
     [Fact]
@@ -153,67 +153,18 @@ public class ServiceRegistryTests
         var service2 = new TestService();
 
         // Act
-        services.SetService<IAIService>("foo", () => service1);
-        services.SetService<IAIService>("bar", () => service2, setAsDefault: true);
+        services.SetService<ITestService>("foo", () => service1);
+        services.SetService<ITestService>("bar", () => service2, setAsDefault: true);
         var provider = services.Build();
 
         // Assert
-        Assert.Same(service2, provider.GetService<IAIService>());
+        Assert.Same(service2, provider.GetService<ITestService>());
     }
 
-    [Fact]
-    public void ItCanTryGetService()
-    {
-        // Arrange
-        var services = new AIServiceCollection();
-        var service = new TestService();
-        services.SetService<IAIService>(service);
-        var provider = services.Build();
-
-        // Act
-        var result = provider.TryGetService(out IAIService? retrieved);
-
-        // Assert
-        Assert.True(result);
-        Assert.Same(service, retrieved);
-    }
-
-    [Fact]
-    public void ItCanTryGetServiceWithName()
-    {
-        // Arrange
-        var services = new AIServiceCollection();
-        var service = new TestService();
-        services.SetService<IAIService>("foo", service);
-        var provider = services.Build();
-
-        // Act
-        var result = provider.TryGetService("foo", out IAIService? retrieved);
-
-        // Assert
-        Assert.True(result);
-        Assert.Same(service, retrieved);
-    }
-
-    [Fact]
-    public void ItReturnsFalseIfTryGetServiceWithInvalidName()
-    {
-        // Arrange
-        var services = new AIServiceCollection();
-        var service = new TestService();
-        services.SetService<IAIService>("foo", service);
-        var provider = services.Build();
-
-        // Act
-        var result = provider.TryGetService("bar", out IAIService? retrieved);
-
-        // Assert
-        Assert.False(result);
-        Assert.Null(retrieved);
-    }
+    public interface ITestService { }
 
     // A test service implementation
-    private sealed class TestService : IAIService
+    private sealed class TestService : ITestService
     {
     }
 }

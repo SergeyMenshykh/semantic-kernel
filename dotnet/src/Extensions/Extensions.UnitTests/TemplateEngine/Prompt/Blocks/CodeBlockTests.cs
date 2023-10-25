@@ -22,7 +22,7 @@ public class CodeBlockTests
     private readonly Mock<IReadOnlyFunctionCollection> _functions;
     private readonly ILoggerFactory _logger = NullLoggerFactory.Instance;
     private readonly Mock<IFunctionRunner> _functionRunner = new();
-    private readonly Mock<IAIServiceProvider> _serviceProvider = new();
+    private readonly Mock<INamedServiceProvider> _serviceProvider = new();
 
     public CodeBlockTests()
     {

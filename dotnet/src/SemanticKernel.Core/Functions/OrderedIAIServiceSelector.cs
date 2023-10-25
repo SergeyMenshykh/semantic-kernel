@@ -15,7 +15,7 @@ namespace Microsoft.SemanticKernel.Functions;
 internal class OrderedIAIServiceSelector : IAIServiceSelector
 {
     /// <inheritdoc/>
-    public (T?, AIRequestSettings?) SelectAIService<T>(IAIServiceProvider serviceProvider, IReadOnlyList<AIRequestSettings>? modelSettings) where T : IAIService
+    public (T?, AIRequestSettings?) SelectAIService<T>(INamedServiceProvider serviceProvider, IReadOnlyList<AIRequestSettings>? modelSettings)
     {
         if (modelSettings is null || modelSettings.Count == 0)
         {
