@@ -6,11 +6,13 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.SemanticKernel.AI;
+using Microsoft.SemanticKernel.AI.ChatCompletion;
 using Microsoft.SemanticKernel.AI.TextCompletion;
 using Microsoft.SemanticKernel.Diagnostics;
 using Microsoft.SemanticKernel.Functions;
@@ -95,9 +97,8 @@ internal sealed class SemanticFunction : ISKFunction, IDisposable
         CancellationToken cancellationToken = default)
     {
         this.AddDefaultValues(context.Variables);
-
-        (var textCompletion, var defaultRequestSettings) = this._serviceSelector.SelectAIService<ITextCompletion>(context.ServiceProvider, this._modelSettings);
-        return await this.RunPromptAsync(textCompletion, requestSettings ?? defaultRequestSettings, context, cancellationToken).ConfigureAwait(false);
+        
+        return await this.RunPromptAsync(requestSettings, context, cancellationToken).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -176,28 +177,48 @@ internal sealed class SemanticFunction : ISKFunction, IDisposable
         }
     }
 
-    private async Task<FunctionResult> RunPromptAsync(
-        ITextCompletion? client,
-        AIRequestSettings? requestSettings,
-        SKContext context,
-        CancellationToken cancellationToken)
+    private async Task<FunctionResult> RunPromptAsync(AIRequestSettings requestSettings, SKContext context, CancellationToken cancellationToken)
     {
-        Verify.NotNull(client);
-
         FunctionResult result;
+        ModelResult[] modelResults;
 
         try
         {
-            string renderedPrompt = await this._promptTemplate.RenderAsync(context, cancellationToken).ConfigureAwait(false);
-            IReadOnlyList<ITextResult> completionResults = await client.GetCompletionsAsync(renderedPrompt, requestSettings, cancellationToken).ConfigureAwait(false);
-            string completion = await GetCompletionsResultContentAsync(completionResults, cancellationToken).ConfigureAwait(false);
+            var prompt = await this._promptTemplate.RenderAsync(context, cancellationToken).ConfigureAwait(false);
 
-            // Update the result with the completion
-            context.Variables.Update(completion);
+            bool isChatCompletionPrompt = Regex.IsMatch(prompt, @"<\s*message\b[^>]*>");
 
-            var modelResults = completionResults.Select(c => c.ModelResult).ToArray();
+            //The content of the if and else blocks should be extracted to separat private methods ar even classes to simplify design and be able test them separately
+            if (isChatCompletionPrompt)
+            {
+                (var chatCompletion, var defaultRequestSettings) = this._serviceSelector.SelectAIService<IChatCompletion>(context.ServiceProvider, this._modelSettings);
 
-            result = new FunctionResult(this.Name, this.PluginName, context, completion);
+                var chatHistory = chatCompletion.CreateNewChat(prompt);
+
+                var completionResults = await chatCompletion.GetChatCompletionsAsync(chatHistory, requestSettings ?? defaultRequestSettings, cancellationToken).ConfigureAwait(false);
+
+                var chatMessageResponse = await completionResults[0].GetChatMessageAsync(cancellationToken).ConfigureAwait(false);
+
+                context.Variables.Update(chatMessageResponse.Content);
+
+                modelResults = completionResults.Select(c => c.ModelResult).ToArray();
+
+                result = new FunctionResult(this.Name, this.PluginName, context, chatMessageResponse.Content);
+            }
+            else
+            {
+                (var textCompletion, var defaultRequestSettings) = this._serviceSelector.SelectAIService<ITextCompletion>(context.ServiceProvider, this._modelSettings);
+
+                var completionResults = await textCompletion.GetCompletionsAsync(prompt, requestSettings ?? defaultRequestSettings, cancellationToken).ConfigureAwait(false);
+
+                var completion = await GetCompletionsResultContentAsync(completionResults, cancellationToken).ConfigureAwait(false);
+
+                context.Variables.Update(completion);
+
+                modelResults = completionResults.Select(c => c.ModelResult).ToArray();
+
+                result = new FunctionResult(this.Name, this.PluginName, context, completion);
+            }
 
             result.Metadata.Add(AIFunctionResultExtensions.ModelResultsMetadataKey, modelResults);
         }
