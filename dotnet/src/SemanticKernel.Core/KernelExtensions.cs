@@ -2,7 +2,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Globalization;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -233,7 +233,7 @@ public static class KernelExtensions
         int i = 0;
         var allFunctionResults = new FunctionResult[functions.Length];
 
-        Dictionary<string, object?> mutableArgs = new(StringComparer.OrdinalIgnoreCase);
+        var mutableArgs = new KernelFunctionParameters();
         if (arguments is not null)
         {
             foreach (KeyValuePair<string, object?> arg in arguments)
@@ -271,7 +271,7 @@ repeat:
                     }
                 }
 
-                functionResult = await function.InvokeAsync(kernel, mutableArgs, context, cancellationToken: cancellationToken).ConfigureAwait(false);
+                functionResult = await function.InvokeAsync(kernel, mutableArgs, cancellationToken: cancellationToken).ConfigureAwait(false);
                 mutableArgs["Input"] = functionResult.Value;
 
                 FunctionInvokedEventArgs? invokedArgs = null;
@@ -279,7 +279,7 @@ repeat:
                 {
                     invokedArgs = new FunctionInvokedEventArgs(functionDetails, functionResult);
                     postHandler(kernel, invokedArgs);
-                    functionResult = new FunctionResult(functionResult.FunctionName, kernel, invokedArgs.KernelContext, functionResult.Value);
+                    functionResult = new FunctionResult(functionResult.FunctionName, functionResult.Value);
                 }
 
                 allFunctionResults[i] = functionResult;
@@ -312,5 +312,18 @@ repeat:
         }
 
         return new KernelResult(functionResult?.Value, allFunctionResults);
+    }
+
+    /// <summary>Gets current culture info</summary>
+    /// <param name="kernel">The kernel.</param>
+    /// <returns></returns>
+    public static CultureInfo GetCurrentCulture(this Kernel kernel)
+    {
+        if (kernel.Data.TryGetValue("CultureInfo", out var value) && value is CultureInfo cultureInfo)
+        {
+            return cultureInfo;
+        }
+
+        return CultureInfo.InvariantCulture;
     }
 }

@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.SemanticKernel.Diagnostics;
-using Microsoft.SemanticKernel.Orchestration;
 using Microsoft.SemanticKernel.TemplateEngine.Basic.Blocks;
 
 namespace Microsoft.SemanticKernel.TemplateEngine.Basic;
@@ -45,11 +44,11 @@ public class BasicPromptTemplateEngine : IPromptTemplateEngine
     }
 
     /// <inheritdoc/>
-    public async Task<string> RenderAsync(string templateText, KernelContext context, CancellationToken cancellationToken = default)
+    public async Task<string> RenderAsync(Kernel kernel, string templateText, IReadOnlyDictionary<string, object?>? arguments, CancellationToken cancellationToken = default)
     {
         this._logger.LogTrace("Rendering string template: {0}", templateText);
         var blocks = this.ExtractBlocks(templateText);
-        return await this.RenderAsync(blocks, context, cancellationToken).ConfigureAwait(false);
+        return await this.RenderAsync(kernel, blocks, arguments, cancellationToken).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -84,7 +83,7 @@ public class BasicPromptTemplateEngine : IPromptTemplateEngine
     /// <param name="context">Access into the current kernel execution context.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
     /// <returns>The prompt template ready to be used for an AI request.</returns>
-    internal async Task<string> RenderAsync(IList<Block> blocks, KernelContext context, CancellationToken cancellationToken = default)
+    internal async Task<string> RenderAsync(Kernel kernel, IList<Block> blocks, IReadOnlyDictionary<string, object?>? arguments, CancellationToken cancellationToken = default)
     {
         this._logger.LogTrace("Rendering list of {0} blocks", blocks.Count);
         var tasks = new List<Task<string>>(blocks.Count);
@@ -93,11 +92,11 @@ public class BasicPromptTemplateEngine : IPromptTemplateEngine
             switch (block)
             {
                 case ITextRendering staticBlock:
-                    tasks.Add(Task.FromResult(staticBlock.Render(context.Variables)));
+                    tasks.Add(Task.FromResult(staticBlock.Render(arguments)));
                     break;
 
                 case ICodeRendering dynamicBlock:
-                    tasks.Add(dynamicBlock.RenderCodeAsync(context, cancellationToken));
+                    tasks.Add(dynamicBlock.RenderCodeAsync(kernel, arguments, cancellationToken));
                     break;
 
                 default:
@@ -123,13 +122,13 @@ public class BasicPromptTemplateEngine : IPromptTemplateEngine
     /// Given a list of blocks, render the Variable Blocks, replacing placeholders with the actual value in memory.
     /// </summary>
     /// <param name="blocks">List of blocks, typically all the blocks found in a template.</param>
-    /// <param name="variables">Container of all the temporary variables known to the kernel.</param>
+    /// <param name="arguments">Arguments providing values that can be used in the template.</param>
     /// <returns>An updated list of blocks where Variable Blocks have rendered to Text Blocks.</returns>
-    internal IList<Block> RenderVariables(IList<Block> blocks, ContextVariables? variables)
+    internal IList<Block> RenderVariables(IList<Block> blocks, IReadOnlyDictionary<string, object?>? arguments)
     {
         this._logger.LogTrace("Rendering variables");
         return blocks.Select(block => block.Type != BlockTypes.Variable
             ? block
-            : new TextBlock(((ITextRendering)block).Render(variables), this._loggerFactory)).ToList();
+            : new TextBlock(((ITextRendering)block).Render(arguments), this._loggerFactory)).ToList();
     }
 }

@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 
 using System.Threading;
-using Microsoft.SemanticKernel.Orchestration;
 
 namespace Microsoft.SemanticKernel.Events;
 #pragma warning disable CA1001 // Types that own disposable fields should be disposable
@@ -13,7 +12,7 @@ public abstract class KernelCancelEventArgs : KernelEventArgs
 {
     private readonly CancellationTokenSource _cancelTokenSource = new();
 
-    internal KernelCancelEventArgs(FunctionView functionView, Kernel kernel, KernelContext context) : base(functionView, kernel, context)
+    internal KernelCancelEventArgs(FunctionView functionView, KernelFunctionParameters functionArguments) : base(functionView, functionArguments)
     {
     }
 

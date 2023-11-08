@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel.Diagnostics;
-using Microsoft.SemanticKernel.Orchestration;
 
 namespace Microsoft.SemanticKernel.TemplateEngine.Basic.Blocks;
 
@@ -72,7 +71,7 @@ internal sealed class CodeBlock : Block, ICodeRendering
     }
 
     /// <inheritdoc/>
-    public async Task<string> RenderCodeAsync(KernelContext context, CancellationToken cancellationToken = default)
+    public async Task<string> RenderCodeAsync(IReadOnlyDictionary<string, object?> arguments, CancellationToken cancellationToken = default)
     {
         if (!this._validated && !this.IsValid(out var error))
         {
@@ -85,7 +84,7 @@ internal sealed class CodeBlock : Block, ICodeRendering
         {
             case BlockTypes.Value:
             case BlockTypes.Variable:
-                return ((ITextRendering)this._tokens[0]).Render(context.Variables);
+                return ((ITextRendering)this._tokens[0]).Render(arguments);
 
             case BlockTypes.FunctionId:
                 return await this.RenderFunctionCallAsync((FunctionIdBlock)this._tokens[0], context).ConfigureAwait(false);
@@ -99,7 +98,7 @@ internal sealed class CodeBlock : Block, ICodeRendering
     private bool _validated;
     private readonly List<Block> _tokens;
 
-    private async Task<string> RenderFunctionCallAsync(FunctionIdBlock fBlock, KernelContext context)
+    private async Task<string> RenderFunctionCallAsync(FunctionIdBlock fBlock, IReadOnlyDictionary<string, object?> arguments)
     {
         // Clone the context to avoid unexpected variable mutations from the inner function execution
         ContextVariables inputVariables = context.Variables.Clone();

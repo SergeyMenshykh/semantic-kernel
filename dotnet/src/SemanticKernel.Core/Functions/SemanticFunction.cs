@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.Json;
@@ -13,7 +12,6 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.SemanticKernel.AI;
 using Microsoft.SemanticKernel.AI.TextCompletion;
 using Microsoft.SemanticKernel.Diagnostics;
-using Microsoft.SemanticKernel.Functions;
 using Microsoft.SemanticKernel.Orchestration;
 using Microsoft.SemanticKernel.TemplateEngine;
 
@@ -82,25 +80,26 @@ internal sealed class SemanticFunction : IKernelFunction
     /// <inheritdoc/>
     public async Task<FunctionResult> InvokeAsync(
         Kernel kernel,
-        IReadOnlyDictionary<string, object?>? arguments = null,
-        KernelContext? context = null,
+        KernelFunctionParameters? arguments = null,
         CancellationToken cancellationToken = default)
     {
         Verify.NotNull(kernel);
 
         try
         {
-            string renderedPrompt = await this._promptTemplate.RenderAsync(context, cancellationToken).ConfigureAwait(false);
+            string renderedPrompt = await this._promptTemplate.RenderAsync(kernel, arguments, cancellationToken).ConfigureAwait(false);
+
             // For backward compatibility, use the service selector from the class if it exists, otherwise use the one from the context
             var serviceSelector = kernel.ServiceSelector;
             (var textCompletion, var defaultRequestSettings) = serviceSelector.SelectAIService<ITextCompletion>(renderedPrompt, kernel.ServiceProvider, this._modelSettings);
             Verify.NotNull(textCompletion);
-            IReadOnlyList<ITextResult> completionResults = await textCompletion.GetCompletionsAsync(renderedPrompt, context.RequestSettings ?? defaultRequestSettings, cancellationToken).ConfigureAwait(false);
+
+            IReadOnlyList<ITextResult> completionResults = await textCompletion.GetCompletionsAsync(renderedPrompt, arguments?.RequestSettings ?? defaultRequestSettings, cancellationToken).ConfigureAwait(false);
             string completion = await GetCompletionsResultContentAsync(completionResults, cancellationToken).ConfigureAwait(false);
 
             var modelResults = completionResults.Select(c => c.ModelResult).ToArray();
 
-            var result = new FunctionResult(this.Name, context, completion);
+            var result = new FunctionResult(this.Name, completion);
 
             result.Metadata.Add(AIFunctionResultExtensions.ModelResultsMetadataKey, modelResults);
 
@@ -165,17 +164,6 @@ internal sealed class SemanticFunction : IKernelFunction
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private string DebuggerDisplay => $"{this.Name} ({this.Description})";
 
-    /// <summary>Add default values to the context variables if the variable is not defined</summary>
-    private void AddDefaultValues(ContextVariables variables)
-    {
-        foreach (var parameter in this.Parameters)
-        {
-            if (!variables.ContainsKey(parameter.Name) && parameter.DefaultValue != null)
-            {
-                variables[parameter.Name] = parameter.DefaultValue;
-            }
-        }
-    }
 
     #endregion
 }

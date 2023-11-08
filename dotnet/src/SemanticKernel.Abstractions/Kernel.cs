@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -20,6 +21,7 @@ public class Kernel
 {
     private IAIServiceSelector? _aIServiceSelector;
     private PluginCollection? _plugins;
+    private IDictionary<string, object?>? _data;
 
     /// <summary>
     /// Creates an instance of <see cref="Kernel"/>.
@@ -89,4 +91,10 @@ public class Kernel
 
     /// <summary>Gets the name of the argument that's used as the default argument name.</summary>
     public static string InputArgumentName { get; } = "input";
+
+    public IDictionary<string, object?> Data
+    {
+        get => this._data ??= new Dictionary<string, object?>();
+        set => this._data = value;
+    }
 }

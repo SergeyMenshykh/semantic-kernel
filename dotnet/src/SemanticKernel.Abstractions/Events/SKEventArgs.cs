@@ -2,7 +2,6 @@
 
 using System;
 using Microsoft.SemanticKernel.Diagnostics;
-using Microsoft.SemanticKernel.Orchestration;
 
 namespace Microsoft.SemanticKernel.Events;
 
@@ -15,14 +14,14 @@ public abstract class KernelEventArgs : EventArgs
     /// Initializes a new instance of the <see cref="KernelEventArgs"/> class.
     /// </summary>
     /// <param name="functionView">Function view details</param>
-    /// <param name="context">Context related to the event</param>
-    internal KernelEventArgs(FunctionView functionView, KernelContext context)
+    /// <param name="functionArguments">Function arguments</param>
+    internal KernelEventArgs(FunctionView functionView, KernelFunctionParameters functionArguments)
     {
-        Verify.NotNull(context);
         Verify.NotNull(functionView);
+        Verify.NotNull(functionArguments);
 
         this.FunctionView = functionView;
-        this.KernelContext = context;
+        this.Arguments = functionArguments;
     }
 
     /// <summary>
@@ -30,11 +29,8 @@ public abstract class KernelEventArgs : EventArgs
     /// </summary>
     public FunctionView FunctionView { get; }
 
-    /// <summary>Kernel associated with the event.</summary>
-    public Kernel Kernel { get; }
-
     /// <summary>
     /// Context related to the event.
     /// </summary>
-    public KernelContext KernelContext { get; }
+    public KernelFunctionParameters Arguments { get; }
 }

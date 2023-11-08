@@ -33,27 +33,13 @@ public sealed class FunctionResult
     internal object? Value { get; }
 
     /// <summary>
-    /// Gets the kernel used in the invocation of the function.
-    /// </summary>
-    public Kernel Kernel { get; }
-
-    /// <summary>
-    /// Gets the additional context used in the invocation of the function.
-    /// </summary>
-    public KernelContext KernelContext { get; }
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="FunctionResult"/> class.
     /// </summary>
     /// <param name="functionName">Name of executed function.</param>
-    /// <param name="kernel">The kernel.</param>
-    /// <param name="context">Instance of <see cref="KernelContext"/> to pass in function pipeline.</param>
     /// <param name="result">The resulting value of the function.</param>
-    public FunctionResult(string functionName, Kernel kernel, KernelContext context, object? result = null)
+    public FunctionResult(string functionName, object? result = null)
     {
         this.FunctionName = functionName;
-        this.Kernel = kernel;
-        this.KernelContext = context;
         this.Value = result;
     }
 

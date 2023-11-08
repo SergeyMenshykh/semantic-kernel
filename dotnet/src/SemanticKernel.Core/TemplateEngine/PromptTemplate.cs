@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.SemanticKernel.Orchestration;
 
 namespace Microsoft.SemanticKernel.TemplateEngine;
 
@@ -46,15 +45,10 @@ public sealed class PromptTemplate : IPromptTemplate
     public IReadOnlyList<ParameterView> Parameters
         => this._params.Value;
 
-    /// <summary>
-    /// Render the template using the information in the context
-    /// </summary>
-    /// <param name="executionContext">Kernel execution context helpers</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
-    /// <returns>Prompt rendered to string</returns>
-    public async Task<string> RenderAsync(KernelContext executionContext, CancellationToken cancellationToken)
+    /// <inheritdoc/>
+    public async Task<string> RenderAsync(Kernel kernel, IReadOnlyDictionary<string, object?>? arguments, CancellationToken cancellationToken = default)
     {
-        return await this._templateEngine.RenderAsync(this._template, executionContext, cancellationToken).ConfigureAwait(false);
+        return await this._templateEngine.RenderAsync(kernel, this._template, arguments, cancellationToken).ConfigureAwait(false);
     }
 
     private readonly Lazy<IReadOnlyList<ParameterView>> _params;

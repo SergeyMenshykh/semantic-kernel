@@ -26,8 +26,9 @@ public sealed class FunctionInvokedEventArgs : KernelCancelEventArgs
     /// Initializes a new instance of the <see cref="FunctionInvokedEventArgs"/> class.
     /// </summary>
     /// <param name="functionView">Function view details</param>
+    /// <param name="functionArguments"></param>
     /// <param name="result">Function result</param>
-    public FunctionInvokedEventArgs(FunctionView functionView, FunctionResult result) : base(functionView, result.Kernel, result.Context)
+    public FunctionInvokedEventArgs(FunctionView functionView, KernelFunctionParameters functionArguments, FunctionResult result) : base(functionView, functionArguments)
     {
         this._metadata = result._metadata;
     }

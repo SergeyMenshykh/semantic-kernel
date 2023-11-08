@@ -68,7 +68,7 @@ internal sealed class InstrumentedSKFunction : IKernelFunction
     /// <inheritdoc/>
     public async Task<FunctionResult> InvokeAsync(
         KernelContext context,
-        AIRequestSettings? requestSettings = null,
+        KernelFunctionParameters? requestSettings = null,
         CancellationToken cancellationToken = default)
     {
         return await this.InvokeWithInstrumentationAsync(() =>

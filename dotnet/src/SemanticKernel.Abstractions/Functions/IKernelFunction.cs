@@ -1,6 +1,5 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.SemanticKernel.Orchestration;
@@ -41,12 +40,10 @@ public interface IKernelFunction
     /// </summary>
     /// <param name="kernel">The kernel used in the invocation of the function.</param>
     /// <param name="arguments">Arguments for the function invocation.</param>
-    /// <param name="context">Additional optional context to be provided to the function invocation.</param>
     /// <returns>The function result and additional contextual information.</returns>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> to monitor for cancellation requests. The default is <see cref="CancellationToken.None"/>.</param>
     Task<FunctionResult> InvokeAsync(
         Kernel kernel,
-        IReadOnlyDictionary<string, object?>? arguments = null,
-        KernelContext? context = null,
+        KernelFunctionParameters? arguments,
         CancellationToken cancellationToken = default);
 }
