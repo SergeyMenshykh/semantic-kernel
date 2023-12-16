@@ -1,5 +1,7 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 
+using System;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Microsoft.SemanticKernel;
@@ -9,6 +11,8 @@ namespace Microsoft.SemanticKernel;
 /// </summary>
 public sealed class InputVariable
 {
+    private object? _defaultValue;
+
     /// <summary>
     /// Name of the variable to pass to the prompt function.
     /// e.g. when using "{{$input}}" the name is "input", when using "{{$style}}" the name is "style", etc.
@@ -26,7 +30,31 @@ public sealed class InputVariable
     /// Default value when nothing is provided.
     /// </summary>
     [JsonPropertyName("default")]
-    public string Default { get; set; } = string.Empty;
+    public object? Default
+    {
+        get
+        {
+            if (this._defaultValue is JsonElement element)
+            {
+                return element.ValueKind switch
+                {
+                    JsonValueKind.String => element.GetString(),
+                    JsonValueKind.Number => element.TryGetInt32(out int intValue) ? intValue :
+                                            element.TryGetInt64(out long longValue) ? longValue :
+                                            element.TryGetDecimal(out decimal decimalValue) ? decimalValue :
+                                            element.GetDouble(),
+                    JsonValueKind.True => true,
+                    JsonValueKind.False => false,
+                    JsonValueKind.Null => null,
+                    JsonValueKind.Undefined => null,
+                    _ => throw new NotSupportedException($"Unsupported default value type '{element.ValueKind}'."),
+                };
+            }
+
+            return this._defaultValue;
+        }
+        set { this._defaultValue = value; }
+    }
 
     /// <summary>
     /// True to indicate the input variable is required. True by default.

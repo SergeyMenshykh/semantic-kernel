@@ -162,7 +162,7 @@ public class PromptTemplateConfigTests
         Assert.Single(promptTemplateConfig.InputVariables);
         Assert.Equal("input variable name", promptTemplateConfig.InputVariables[0].Name);
         Assert.Equal("input variable description", promptTemplateConfig.InputVariables[0].Description);
-        Assert.Equal("default value", promptTemplateConfig.InputVariables[0].Default);
+        Assert.Equal("default value", promptTemplateConfig.InputVariables[0].Default?.ToString());
         Assert.True(promptTemplateConfig.InputVariables[0].IsRequired);
     }
 

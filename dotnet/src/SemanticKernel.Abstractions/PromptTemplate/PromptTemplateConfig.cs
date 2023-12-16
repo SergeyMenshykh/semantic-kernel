@@ -136,7 +136,7 @@ public sealed class PromptTemplateConfig
                 Description = p.Description,
                 DefaultValue = p.Default,
                 IsRequired = p.IsRequired,
-                ParameterType = !string.IsNullOrWhiteSpace(p.JsonSchema) ? null : typeof(string),
+                ParameterType = !string.IsNullOrWhiteSpace(p.JsonSchema) ? null : p.Default?.GetType(),
                 Schema = !string.IsNullOrWhiteSpace(p.JsonSchema) ? KernelJsonSchema.Parse(p.JsonSchema!) : null,
             }).ToList();
         }
