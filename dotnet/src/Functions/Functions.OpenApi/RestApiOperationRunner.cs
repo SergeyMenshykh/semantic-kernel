@@ -387,7 +387,22 @@ internal sealed class RestApiOperationRunner
     {
         var url = operation.BuildOperationUrl(arguments, serverUrlOverride, apiHostUrl);
 
-        return new UriBuilder(url) { Query = operation.BuildQueryString(arguments) }.Uri;
+        var queryString = operation.BuildQueryString(arguments);
+
+        // No query string was created from query string parameters
+        if (string.IsNullOrEmpty(queryString))
+        {
+            return url;
+        }
+
+        // No query string, which might be provided in the 'Path' property, was found in the URL.
+        if (string.IsNullOrEmpty(url.Query))
+        {
+            return new UriBuilder(url) { Query = queryString }.Uri;
+        }
+
+        // Both query strings are present
+        return new UriBuilder(url) { Query = string.Join("&", url.Query, queryString) }.Uri;
     }
 
     #endregion

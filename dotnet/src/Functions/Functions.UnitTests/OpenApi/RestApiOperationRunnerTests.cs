@@ -925,6 +925,80 @@ public sealed class RestApiOperationRunnerTests : IDisposable
         await Assert.ThrowsAsync<KernelException>(() => sut.RunAsync(operation, arguments));
     }
 
+    [Fact]
+    public async Task ItShouldAddQueryStringCreatedFromQueryStringParametersToStaticOneProvidedViaPathAsync()
+    {
+        // Arrange
+        this._httpMessageHandlerStub.ResponseToReturn.Content = new StringContent("fake-content", Encoding.UTF8, MediaTypeNames.Application.Json);
+
+        var firstParameter = new RestApiOperationParameter(
+            "p1",
+            "string",
+            isRequired: true, //Marking the parameter as required
+            false,
+            RestApiOperationParameterLocation.Query,
+            RestApiOperationParameterStyle.Form);
+
+        var secondParameter = new RestApiOperationParameter(
+            "p2",
+            "integer",
+            isRequired: true, //Marking the parameter as required
+            false,
+            RestApiOperationParameterLocation.Query,
+            RestApiOperationParameterStyle.Form);
+
+        var operation = new RestApiOperation(
+            "fake-id",
+            new Uri("https://fake-random-test-host"),
+            "fake-path?p0=v0",
+            HttpMethod.Get,
+            "fake-description",
+            [firstParameter, secondParameter],
+            payload: null
+        );
+
+        var arguments = new KernelArguments
+        {
+            { "p1", "v1" },
+            { "p2", 28 },
+        };
+
+        var sut = new RestApiOperationRunner(this._httpClient, this._authenticationHandlerMock.Object);
+
+        // Act
+        var result = await sut.RunAsync(operation, arguments);
+
+        // Assert
+        Assert.NotNull(this._httpMessageHandlerStub.RequestUri);
+        Assert.Equal("https://fake-random-test-host/fake-path?p0=v0&p1=v1&p2=28", this._httpMessageHandlerStub.RequestUri.AbsoluteUri);
+    }
+
+    [Fact]
+    public async Task ItShouldUseQueryStringProvidedViaPathAsync()
+    {
+        // Arrange
+        this._httpMessageHandlerStub.ResponseToReturn.Content = new StringContent("fake-content", Encoding.UTF8, MediaTypeNames.Application.Json);
+
+        var operation = new RestApiOperation(
+            "fake-id",
+            new Uri("https://fake-random-test-host"),
+            "fake-path?p0=v0",
+            HttpMethod.Get,
+            "fake-description",
+            [],
+            payload: null
+        );
+
+        var sut = new RestApiOperationRunner(this._httpClient, this._authenticationHandlerMock.Object);
+
+        // Act
+        var result = await sut.RunAsync(operation, new KernelArguments { });
+
+        // Assert
+        Assert.NotNull(this._httpMessageHandlerStub.RequestUri);
+        Assert.Equal("https://fake-random-test-host/fake-path?p0=v0", this._httpMessageHandlerStub.RequestUri.AbsoluteUri);
+    }
+
     [Theory]
     [InlineData(MediaTypeNames.Application.Json)]
     [InlineData(MediaTypeNames.Application.Xml)]
