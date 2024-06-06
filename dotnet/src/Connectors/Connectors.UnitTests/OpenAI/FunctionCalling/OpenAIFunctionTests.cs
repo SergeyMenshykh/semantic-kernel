@@ -92,12 +92,12 @@ public sealed class OpenAIFunctionTests
     [Fact]
     public void ItCanConvertToFunctionDefinitionsWithParameterTypesAndReturnParameterType()
     {
-        string expectedParameterSchema = """{   "type": "object",   "required": ["param1", "param2"],   "properties": {     "param1": { "type": "string", "description": "String param 1" },     "param2": { "type": "integer", "description": "Int param 2" }   } } """;
+        string expectedParameterSchema = """{"type":"object","required":["param1","param2"],"properties":{"param1":{"type":"string","description":"String param 1"},"param2":{"type":"integer","description":"Int param 2"},"param3":{"type":"number","description":"double param 2 (default value: 34.8)"}}}""";
 
         KernelPlugin plugin = KernelPluginFactory.CreateFromFunctions("Tests", new[]
         {
             KernelFunctionFactory.CreateFromMethod(
-                [return: Description("My test Result")] ([Description("String param 1")] string param1, [Description("Int param 2")] int param2) => "",
+                [return: Description("My test Result")] ([Description("String param 1")] string param1, [Description("Int param 2")] int param2, [Description("double param 2")] double param3 = 34.8) => "",
                 "TestFunction",
                 "My test function")
         });
@@ -118,12 +118,12 @@ public sealed class OpenAIFunctionTests
     [Fact]
     public void ItCanConvertToFunctionDefinitionsWithParameterTypesAndNoReturnParameterType()
     {
-        string expectedParameterSchema = """{   "type": "object",   "required": ["param1", "param2"],   "properties": {     "param1": { "type": "string", "description": "String param 1" },     "param2": { "type": "integer", "description": "Int param 2" }   } } """;
+        string expectedParameterSchema = """{"type":"object","required":["param1","param2"],"properties":{"param1":{"type":"string","description":"String param 1"},"param2":{"type":"integer","description":"Int param 2"},"param3":{"type":"number","description":"double param 2 (default value: 34.8)"}}}""";
 
         KernelPlugin plugin = KernelPluginFactory.CreateFromFunctions("Tests", new[]
         {
             KernelFunctionFactory.CreateFromMethod(
-                [return: Description("My test Result")] ([Description("String param 1")] string param1, [Description("Int param 2")] int param2) => { },
+                [return: Description("My test Result")] ([Description("String param 1")] string param1, [Description("Int param 2")] int param2, [Description("double param 2")] double param3 = 34.8) => { },
                 "TestFunction",
                 "My test function")
         });
