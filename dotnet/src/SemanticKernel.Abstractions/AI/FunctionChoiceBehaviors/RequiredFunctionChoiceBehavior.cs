@@ -71,7 +71,7 @@ public sealed class RequiredFunctionChoiceBehavior : FunctionChoiceBehavior
             throw new KernelException("Auto-invocation for Required choice behavior is not supported when no kernel is provided.");
         }
 
-        List<KernelFunction>? availableFunctions = null;
+        List<KernelFunctionMetadata>? availableFunctions = null;
         bool allowAnyRequestedKernelFunction = false;
 
         // Handle functions provided via the 'Functions' property as function fully qualified names.
@@ -86,7 +86,7 @@ public sealed class RequiredFunctionChoiceBehavior : FunctionChoiceBehavior
                 // Check if the function is available in the kernel. If it is, then connectors can find it for auto-invocation later.
                 if (context.Kernel!.Plugins.TryGetFunction(nameParts.PluginName, nameParts.Name, out var function))
                 {
-                    availableFunctions.Add(function);
+                    availableFunctions.Add(function.Metadata);
                     continue;
                 }
 
@@ -100,7 +100,7 @@ public sealed class RequiredFunctionChoiceBehavior : FunctionChoiceBehavior
                 function = this._functions?.FirstOrDefault(f => f.Name == nameParts.Name && f.PluginName == nameParts.PluginName);
                 if (function is not null)
                 {
-                    availableFunctions.Add(function);
+                    availableFunctions.Add(function.Metadata);
                     continue;
                 }
 
@@ -114,17 +114,16 @@ public sealed class RequiredFunctionChoiceBehavior : FunctionChoiceBehavior
 
             foreach (var plugin in context.Kernel.Plugins)
             {
-                availableFunctions ??= [];
-                availableFunctions.AddRange(plugin);
+                (availableFunctions ??= []).AddRange(plugin.Select(p => p.Metadata));
             }
         }
 
         return new FunctionChoiceBehaviorConfiguration()
         {
             Choice = FunctionChoice.Required,
-            Functions = availableFunctions,
+            FunctionsMetadata = availableFunctions,
             AutoInvoke = this._autoInvoke,
-            AllowAnyRequestedKernelFunction = allowAnyRequestedKernelFunction
+            AllowAnyRequestedKernelFunction = allowAnyRequestedKernelFunction,
         };
     }
 }

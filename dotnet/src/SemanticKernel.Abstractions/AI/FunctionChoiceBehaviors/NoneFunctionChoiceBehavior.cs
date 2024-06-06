@@ -58,7 +58,7 @@ public sealed class NoneFunctionChoiceBehavior : FunctionChoiceBehavior
     /// <inheritdoc/>
     public override FunctionChoiceBehaviorConfiguration GetConfiguration(FunctionChoiceBehaviorContext context)
     {
-        List<KernelFunction>? availableFunctions = null;
+        List<KernelFunctionMetadata>? availableFunctions = null;
 
         // Handle functions provided via the 'Functions' property as function fully qualified names.
         if (this.Functions is { } functionFQNs && functionFQNs.Any())
@@ -72,7 +72,7 @@ public sealed class NoneFunctionChoiceBehavior : FunctionChoiceBehavior
                 // Check if the function is available in the kernel.
                 if (context.Kernel!.Plugins.TryGetFunction(nameParts.PluginName, nameParts.Name, out var function))
                 {
-                    availableFunctions.Add(function);
+                    availableFunctions.Add(function.Metadata);
                     continue;
                 }
 
@@ -80,7 +80,7 @@ public sealed class NoneFunctionChoiceBehavior : FunctionChoiceBehavior
                 function = this._functions?.FirstOrDefault(f => f.Name == nameParts.Name && f.PluginName == nameParts.PluginName);
                 if (function is not null)
                 {
-                    availableFunctions.Add(function);
+                    availableFunctions.Add(function.Metadata);
                     continue;
                 }
 
@@ -92,15 +92,14 @@ public sealed class NoneFunctionChoiceBehavior : FunctionChoiceBehavior
         {
             foreach (var plugin in context.Kernel.Plugins)
             {
-                availableFunctions ??= [];
-                availableFunctions.AddRange(plugin);
+                (availableFunctions ??= []).AddRange(plugin.Select(p => p.Metadata));
             }
         }
 
         return new FunctionChoiceBehaviorConfiguration()
         {
             Choice = FunctionChoice.None,
-            Functions = availableFunctions,
+            FunctionsMetadata = availableFunctions,
         };
     }
 }
