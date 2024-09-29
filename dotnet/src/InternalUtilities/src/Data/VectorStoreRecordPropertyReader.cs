@@ -76,7 +76,7 @@ internal static class VectorStoreRecordPropertyReader
     /// <param name="type">The data model to find the properties on.</param>
     /// <param name="supportsMultipleVectors">A value indicating whether multiple vector properties are supported instead of just one.</param>
     /// <returns>The categorized properties.</returns>
-    public static (PropertyInfo KeyProperty, List<PropertyInfo> DataProperties, List<PropertyInfo> VectorProperties) FindProperties(Type type, bool supportsMultipleVectors)
+    public static (PropertyInfo KeyProperty, List<PropertyInfo> DataProperties, List<PropertyInfo> VectorProperties) FindProperties([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] Type type, bool supportsMultipleVectors)
     {
         var cache = supportsMultipleVectors ? s_multipleVectorsPropertiesCache : s_singleVectorPropertiesCache;
 
@@ -158,7 +158,7 @@ internal static class VectorStoreRecordPropertyReader
     /// <param name="vectorStoreRecordDefinition">The property configuration.</param>
     /// <param name="supportsMultipleVectors">A value indicating whether multiple vector properties are supported instead of just one.</param>
     /// <returns>The categorized properties.</returns>
-    public static (PropertyInfo KeyProperty, List<PropertyInfo> DataProperties, List<PropertyInfo> VectorProperties) FindProperties(Type type, VectorStoreRecordDefinition vectorStoreRecordDefinition, bool supportsMultipleVectors)
+    public static (PropertyInfo KeyProperty, List<PropertyInfo> DataProperties, List<PropertyInfo> VectorProperties) FindProperties([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] Type type, VectorStoreRecordDefinition vectorStoreRecordDefinition, bool supportsMultipleVectors)
     {
         PropertyInfo? keyProperty = null;
         List<PropertyInfo> dataProperties = new();
@@ -244,7 +244,7 @@ internal static class VectorStoreRecordPropertyReader
     /// <param name="type">The type to create the definition for.</param>
     /// <param name="supportsMultipleVectors"><see langword="true"/> if the store supports multiple vectors, <see langword="false"/> otherwise.</param>
     /// <returns>The <see cref="VectorStoreRecordDefinition"/> based on the given type.</returns>
-    public static VectorStoreRecordDefinition CreateVectorStoreRecordDefinitionFromType(Type type, bool supportsMultipleVectors)
+    public static VectorStoreRecordDefinition CreateVectorStoreRecordDefinitionFromType([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] Type type, bool supportsMultipleVectors)
     {
         var properties = FindProperties(type, supportsMultipleVectors);
         var definitionProperties = new List<VectorStoreRecordProperty>();
@@ -455,7 +455,7 @@ internal static class VectorStoreRecordPropertyReader
     /// <param name="dataModel">The data model type that the property belongs to.</param>
     /// <param name="options">The options used for JSON serialization.</param>
     /// <returns>The JSON storage property name.</returns>
-    public static string GetJsonPropertyName(VectorStoreRecordProperty property, Type dataModel, JsonSerializerOptions options)
+    public static string GetJsonPropertyName(VectorStoreRecordProperty property, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] Type dataModel, JsonSerializerOptions options)
     {
         var propertyInfo = dataModel.GetProperty(property.DataModelPropertyName);
 
@@ -508,7 +508,7 @@ internal static class VectorStoreRecordPropertyReader
     /// <returns>The map from property names to the names under which they should be saved in storage if using JSON serialization.</returns>
     public static Dictionary<string, string> BuildPropertyNameToJsonPropertyNameMap(
         (VectorStoreRecordKeyProperty keyProperty, List<VectorStoreRecordDataProperty> dataProperties, List<VectorStoreRecordVectorProperty> vectorProperties) properties,
-        Type dataModel,
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] Type dataModel,
         JsonSerializerOptions options)
     {
         var jsonPropertyNameMap = new Dictionary<string, string>();

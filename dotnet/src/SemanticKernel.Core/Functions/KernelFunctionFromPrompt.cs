@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -34,6 +35,8 @@ internal sealed class KernelFunctionFromPrompt : KernelFunction
     /// <param name="promptTemplateFactory">Optional: Prompt template factory</param>
     /// <param name="loggerFactory">Logger factory</param>
     /// <returns>A function ready to use</returns>
+    [RequiresUnreferencedCode("Uses reflection to handle various aspects of the function creation and invocation, making it incompatible with AOT scenarios.")]
+    [RequiresDynamicCode("Uses reflection to handle various aspects of the function creation and invocation, making it incompatible with AOT scenarios.")]
     public static KernelFunction Create(
         string promptTemplate,
         Dictionary<string, PromptExecutionSettings>? executionSettings = null,
@@ -75,12 +78,68 @@ internal sealed class KernelFunctionFromPrompt : KernelFunction
     }
 
     /// <summary>
+    /// Creates a <see cref="KernelFunction"/> instance for a prompt specified via a prompt template.
+    /// </summary>
+    /// <param name="promptTemplate">Prompt template for the function, defined using the <see cref="PromptTemplateConfig.SemanticKernelTemplateFormat"/> template format.</param>
+    /// <param name="jsonSerializerOptions">The <see cref="JsonSerializerOptions"/> to use for serialization and deserialization of various aspects of the function.</param>
+    /// <param name="executionSettings">Default execution settings to use when invoking this prompt function.</param>
+    /// <param name="functionName">A name for the given function. The name can be referenced in templates and used by the pipeline planner.</param>
+    /// <param name="description">The description to use for the function.</param>
+    /// <param name="templateFormat">Optional format of the template. Must be provided if a prompt template factory is provided</param>
+    /// <param name="promptTemplateFactory">Optional: Prompt template factory</param>
+    /// <param name="loggerFactory">Logger factory</param>
+    /// <returns>A function ready to use</returns>
+    public static KernelFunction Create(
+        string promptTemplate,
+        JsonSerializerOptions jsonSerializerOptions,
+        Dictionary<string, PromptExecutionSettings>? executionSettings = null,
+        string? functionName = null,
+        string? description = null,
+        string? templateFormat = null,
+        IPromptTemplateFactory? promptTemplateFactory = null,
+        ILoggerFactory? loggerFactory = null)
+    {
+        Verify.NotNullOrWhiteSpace(promptTemplate);
+
+        if (promptTemplateFactory is not null)
+        {
+            if (string.IsNullOrWhiteSpace(templateFormat))
+            {
+                throw new ArgumentException($"Template format is required when providing a {nameof(promptTemplateFactory)}", nameof(templateFormat));
+            }
+        }
+
+        var promptConfig = new PromptTemplateConfig
+        {
+            TemplateFormat = templateFormat ?? PromptTemplateConfig.SemanticKernelTemplateFormat,
+            Name = functionName,
+            Description = description ?? "Generic function, unknown purpose",
+            Template = promptTemplate
+        };
+
+        if (executionSettings is not null)
+        {
+            promptConfig.ExecutionSettings = executionSettings;
+        }
+
+        var factory = promptTemplateFactory ?? new KernelPromptTemplateFactory(loggerFactory);
+
+        return Create(
+            promptTemplate: factory.Create(promptConfig),
+            promptConfig: promptConfig,
+            jsonSerializerOptions: jsonSerializerOptions,
+            loggerFactory: loggerFactory);
+    }
+
+    /// <summary>
     /// Creates a <see cref="KernelFunction"/> instance for a prompt specified via a prompt template configuration.
     /// </summary>
     /// <param name="promptConfig">Prompt template configuration</param>
     /// <param name="promptTemplateFactory">Optional: Prompt template factory</param>
     /// <param name="loggerFactory">Logger factory</param>
     /// <returns>A function ready to use</returns>
+    [RequiresUnreferencedCode("Uses reflection to handle various aspects of the function creation and invocation, making it incompatible with AOT scenarios.")]
+    [RequiresDynamicCode("Uses reflection to handle various aspects of the function creation and invocation, making it incompatible with AOT scenarios.")]
     public static KernelFunction Create(
         PromptTemplateConfig promptConfig,
         IPromptTemplateFactory? promptTemplateFactory = null,
@@ -95,12 +154,37 @@ internal sealed class KernelFunctionFromPrompt : KernelFunction
     }
 
     /// <summary>
+    /// Creates a <see cref="KernelFunction"/> instance for a prompt specified via a prompt template configuration.
+    /// </summary>
+    /// <param name="promptConfig">Prompt template configuration</param>
+    /// <param name="jsonSerializerOptions">The <see cref="JsonSerializerOptions"/> to use for serialization and deserialization of various aspects of the function.</param>
+    /// <param name="promptTemplateFactory">Optional: Prompt template factory</param>
+    /// <param name="loggerFactory">Logger factory</param>
+    /// <returns>A function ready to use</returns>
+    public static KernelFunction Create(
+        PromptTemplateConfig promptConfig,
+        JsonSerializerOptions jsonSerializerOptions,
+        IPromptTemplateFactory? promptTemplateFactory = null,
+        ILoggerFactory? loggerFactory = null)
+    {
+        var factory = promptTemplateFactory ?? new KernelPromptTemplateFactory(loggerFactory);
+
+        return Create(
+            promptTemplate: factory.Create(promptConfig),
+            promptConfig: promptConfig,
+            jsonSerializerOptions: jsonSerializerOptions,
+            loggerFactory: loggerFactory);
+    }
+
+    /// <summary>
     /// Creates a <see cref="KernelFunction"/> instance for a prompt specified via a prompt template and a prompt template configuration.
     /// </summary>
     /// <param name="promptTemplate">Prompt template for the function, defined using the <see cref="PromptTemplateConfig.SemanticKernelTemplateFormat"/> template format.</param>
     /// <param name="promptConfig">Prompt template configuration.</param>
     /// <param name="loggerFactory">Logger factory</param>
     /// <returns>A function ready to use</returns>
+    [RequiresUnreferencedCode("Uses reflection to handle various aspects of the function creation and invocation, making it incompatible with AOT scenarios.")]
+    [RequiresDynamicCode("Uses reflection to handle various aspects of the function creation and invocation, making it incompatible with AOT scenarios.")]
     public static KernelFunction Create(
         IPromptTemplate promptTemplate,
         PromptTemplateConfig promptConfig,
@@ -112,6 +196,30 @@ internal sealed class KernelFunctionFromPrompt : KernelFunction
         return new KernelFunctionFromPrompt(
             template: promptTemplate,
             promptConfig: promptConfig,
+            logger: loggerFactory?.CreateLogger(typeof(KernelFunctionFactory)) ?? NullLogger.Instance);
+    }
+
+    /// <summary>
+    /// Creates a <see cref="KernelFunction"/> instance for a prompt specified via a prompt template and a prompt template configuration.
+    /// </summary>
+    /// <param name="promptTemplate">Prompt template for the function, defined using the <see cref="PromptTemplateConfig.SemanticKernelTemplateFormat"/> template format.</param>
+    /// <param name="promptConfig">Prompt template configuration.</param>
+    /// <param name="jsonSerializerOptions">The <see cref="JsonSerializerOptions"/> to use for serialization and deserialization of various aspects of the function.</param>
+    /// <param name="loggerFactory">Logger factory</param>
+    /// <returns>A function ready to use</returns>
+    public static KernelFunction Create(
+        IPromptTemplate promptTemplate,
+        PromptTemplateConfig promptConfig,
+        JsonSerializerOptions jsonSerializerOptions,
+        ILoggerFactory? loggerFactory = null)
+    {
+        Verify.NotNull(promptTemplate);
+        Verify.NotNull(promptConfig);
+
+        return new KernelFunctionFromPrompt(
+            template: promptTemplate,
+            promptConfig: promptConfig,
+            jsonSerializerOptions: jsonSerializerOptions,
             logger: loggerFactory?.CreateLogger(typeof(KernelFunctionFactory)) ?? NullLogger.Instance);
     }
 
@@ -223,6 +331,8 @@ internal sealed class KernelFunctionFromPrompt : KernelFunction
             this._logger);
     }
 
+    [RequiresUnreferencedCode("Uses reflection to handle various aspects of the function creation and invocation, making it incompatible with AOT scenarios.")]
+    [RequiresDynamicCode("Uses reflection to handle various aspects of the function creation and invocation, making it incompatible with AOT scenarios.")]
     private KernelFunctionFromPrompt(
         IPromptTemplate template,
         PromptTemplateConfig promptConfig,
@@ -241,6 +351,26 @@ internal sealed class KernelFunctionFromPrompt : KernelFunction
 
     private KernelFunctionFromPrompt(
         IPromptTemplate template,
+        PromptTemplateConfig promptConfig,
+        JsonSerializerOptions jsonSerializerOptions,
+        ILogger logger) : this(
+            template,
+            promptConfig.Name ?? CreateRandomFunctionName(),
+            null,
+            promptConfig.Description ?? string.Empty,
+            promptConfig.GetKernelParametersMetadata(jsonSerializerOptions),
+            jsonSerializerOptions,
+            promptConfig.GetKernelReturnParameterMetadata(jsonSerializerOptions),
+            promptConfig.ExecutionSettings,
+            promptConfig.InputVariables,
+            logger)
+    {
+    }
+
+    [RequiresUnreferencedCode("Uses reflection to handle various aspects of the function creation and invocation, making it incompatible with AOT scenarios.")]
+    [RequiresDynamicCode("Uses reflection to handle various aspects of the function creation and invocation, making it incompatible with AOT scenarios.")]
+    private KernelFunctionFromPrompt(
+        IPromptTemplate template,
         string functionName,
         string? pluginName,
         string description,
@@ -253,6 +383,31 @@ internal sealed class KernelFunctionFromPrompt : KernelFunction
             pluginName,
             description ?? string.Empty,
             parameters,
+            returnParameter,
+            executionSettings)
+    {
+        this._logger = logger;
+
+        this._promptTemplate = template;
+        this._inputVariables = inputVariables.Select(iv => new InputVariable(iv)).ToList();
+    }
+
+    private KernelFunctionFromPrompt(
+        IPromptTemplate template,
+        string functionName,
+        string? pluginName,
+        string description,
+        IReadOnlyList<KernelParameterMetadata> parameters,
+        JsonSerializerOptions jsonSerializerOptions,
+        KernelReturnParameterMetadata? returnParameter,
+        Dictionary<string, PromptExecutionSettings> executionSettings,
+        List<InputVariable> inputVariables,
+        ILogger logger) : base(
+            functionName ?? CreateRandomFunctionName(),
+            pluginName,
+            description ?? string.Empty,
+            parameters,
+            jsonSerializerOptions,
             returnParameter,
             executionSettings)
     {
