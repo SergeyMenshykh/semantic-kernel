@@ -39,7 +39,7 @@ public static class ServiceCollectionExtensions
     /// <param name="options">Options used to construct an instance of <see cref="VectorStoreTextSearch{TRecord}"/></param>
     /// <param name="serviceId">An optional service id to use as the service key.</param>
     [Obsolete("This has been replaced by the Microsoft.SemanticKernel.Connectors.InMemory nuget package.")]
-    public static IServiceCollection AddVolatileVectorStoreTextSearch<TKey, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] TRecord>(
+    public static IServiceCollection AddVolatileVectorStoreTextSearch<TKey, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRecord>(
         this IServiceCollection services,
         string collectionName,
         ITextSearchStringMapper? stringMapper = null,
