@@ -39,8 +39,7 @@ public static class ServiceCollectionExtensions
     /// <param name="options">Options used to construct an instance of <see cref="VectorStoreTextSearch{TRecord}"/></param>
     /// <param name="serviceId">An optional service id to use as the service key.</param>
     [Obsolete("This has been replaced by the Microsoft.SemanticKernel.Connectors.InMemory nuget package.")]
-    [UnconditionalSuppressMessage("Trimming", "IL2091:Target generic argument does not satisfy 'DynamicallyAccessedMembersAttribute' in target method or type. The generic parameter of the source method or type does not have matching annotations.")]
-    public static IServiceCollection AddVolatileVectorStoreTextSearch<TKey, TRecord>(
+    public static IServiceCollection AddVolatileVectorStoreTextSearch<TKey, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] TRecord>(
         this IServiceCollection services,
         string collectionName,
         ITextSearchStringMapper? stringMapper = null,
