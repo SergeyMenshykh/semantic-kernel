@@ -36,7 +36,7 @@ public static class KernelBuilderExtensions
     /// <param name="options">Options used to construct an instance of <see cref="VectorStoreTextSearch{TRecord}"/></param>
     /// <param name="serviceId">An optional service id to use as the service key.</param>
     [Obsolete("This has been replaced by the Microsoft.SemanticKernel.Connectors.InMemory nuget package.")]
-    public static IKernelBuilder AddVolatileVectorStoreTextSearch<TKey, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRecord>(
+    public static IKernelBuilder AddVolatileVectorStoreTextSearch<TKey, TRecord>(
         this IKernelBuilder builder,
         string collectionName,
         ITextSearchStringMapper? stringMapper = null,
@@ -59,7 +59,7 @@ public static class KernelBuilderExtensions
     /// <param name="options">Options used to construct an instance of <see cref="VectorStoreTextSearch{TRecord}"/></param>
     /// <param name="serviceId">An optional service id to use as the service key.</param>
     [Obsolete("This has been replaced by the Microsoft.SemanticKernel.Connectors.InMemory nuget package.")]
-    public static IKernelBuilder AddVolatileVectorStoreTextSearch<TKey, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors)] TRecord>(
+    public static IKernelBuilder AddVolatileVectorStoreTextSearch<TKey, TRecord>(
         this IKernelBuilder builder,
         string collectionName,
         MapFromResultToString? stringMapper = null,

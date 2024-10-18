@@ -1,6 +1,5 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 
-using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -10,7 +9,7 @@ namespace Microsoft.Extensions.VectorData;
 /// Contains a method for doing a vector search using a vector.
 /// </summary>
 /// <typeparam name="TRecord">The record data model to use for retrieving data from the store.</typeparam>
-public interface IVectorizedSearch<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] TRecord>
+public interface IVectorizedSearch<TRecord>
 {
     /// <summary>
     /// Search the vector store for records that match the given embedding and filter.
