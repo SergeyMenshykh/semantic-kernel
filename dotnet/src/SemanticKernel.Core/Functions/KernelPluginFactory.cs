@@ -110,8 +110,6 @@ public static partial class KernelPluginFactory
     /// Attributed methods must all have different names; overloads are not supported.
     /// </remarks>
     [Experimental("SKEXP0120")]
-    [RequiresUnreferencedCode("Uses reflection to handle various aspects of the function creation and invocation, making it incompatible with AOT scenarios.")]
-    [RequiresDynamicCode("Uses reflection to handle various aspects of the function creation and invocation, making it incompatible with AOT scenarios.")]
     public static KernelPlugin CreateFromType([DynamicallyAccessedMembers(
         DynamicallyAccessedMemberTypes.PublicConstructors |
         DynamicallyAccessedMemberTypes.PublicMethods |

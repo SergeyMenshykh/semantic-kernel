@@ -347,7 +347,6 @@ public sealed class VolatileVectorStoreRecordCollection<TKey, [DynamicallyAccess
     /// <param name="overrideKeyResolver">The override key resolver if one was provided.</param>
     /// <param name="keyProperty">They key property from the record definition.</param>
     /// <returns>The <see cref="VolatileVectorStoreKeyResolver{TKey, TRecord}"/>.</returns>
-    [UnconditionalSuppressMessage("Trimming", "IL2090:'this' argument does not satisfy 'DynamicallyAccessedMembersAttribute' in call to target method.")]
     private static VolatileVectorStoreKeyResolver<TKey, TRecord> CreateKeyResolver(VolatileVectorStoreKeyResolver<TKey, TRecord>? overrideKeyResolver, VectorStoreRecordKeyProperty keyProperty)
     {
         // Custom resolver.
