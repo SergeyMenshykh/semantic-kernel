@@ -6,6 +6,7 @@ using SemanticKernel.AotTests.JsonSerializerContexts;
 using SemanticKernel.AotTests.Plugins;
 
 namespace SemanticKernel.AotTests.UnitTests.Core.Functions;
+
 internal sealed class KernelFunctionFromMethodTests
 {
     private static readonly Kernel s_kernel = new();

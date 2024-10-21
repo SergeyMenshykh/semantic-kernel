@@ -148,7 +148,7 @@ internal static partial class KernelFunctionLogMessages
 
                 if (jsonSerializerOptions is not null)
                 {
-                    JsonTypeInfo<object?> typeInfo = (JsonTypeInfo<object?>)jsonSerializerOptions.GetTypeInfo(typeof(object));
+                    JsonTypeInfo typeInfo = jsonSerializerOptions.GetTypeInfo(resultValue!.Value!.GetType());
                     jsonString = JsonSerializer.Serialize(resultValue?.Value, typeInfo);
                 }
                 else
