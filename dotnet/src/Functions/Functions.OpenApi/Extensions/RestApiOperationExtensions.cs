@@ -41,6 +41,11 @@ internal static partial class RestApiOperationExtensions
         // Create a property alternative name without special symbols that are not supported by SK template language.
         foreach (var parameter in parameters)
         {
+            if (!string.IsNullOrEmpty(parameter.AlternativeName))
+            {
+                continue;
+            }
+
             parameter.AlternativeName = InvalidSymbolsRegex().Replace(parameter.Name, "_");
         }
 

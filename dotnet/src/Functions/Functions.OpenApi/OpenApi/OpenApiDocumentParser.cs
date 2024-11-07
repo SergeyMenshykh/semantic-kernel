@@ -25,7 +25,7 @@ namespace Microsoft.SemanticKernel.Plugins.OpenApi;
 /// <summary>
 /// Parser for OpenAPI documents.
 /// </summary>
-internal sealed class OpenApiDocumentParser(ILoggerFactory? loggerFactory = null) : IOpenApiDocumentParser
+internal sealed class OpenApiDocumentParser(ILoggerFactory? loggerFactory = null, OpenApiDocumentParsingFilter? documentParsingFilter = null) : IOpenApiDocumentParser
 {
     /// <inheritdoc/>
     public async Task<RestApiSpecification> ParseAsync(
@@ -42,7 +42,14 @@ internal sealed class OpenApiDocumentParser(ILoggerFactory? loggerFactory = null
 
         this.AssertReadingSuccessful(result, ignoreNonCompliantErrors);
 
-        return new(ExtractRestApiInfo(result.OpenApiDocument), ExtractRestApiOperations(result.OpenApiDocument, operationsToExclude, this._logger));
+        RestApiSpecification specification = new(ExtractRestApiInfo(result.OpenApiDocument), ExtractRestApiOperations(result.OpenApiDocument, operationsToExclude, this._logger));
+
+        if (documentParsingFilter is not null)
+        {
+            documentParsingFilter(specification);
+        }
+
+        return specification;
     }
 
     #region private
