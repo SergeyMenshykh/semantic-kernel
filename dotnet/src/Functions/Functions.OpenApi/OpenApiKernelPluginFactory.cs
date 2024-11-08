@@ -138,7 +138,7 @@ public static partial class OpenApiKernelPluginFactory
 
         loggerFactory ??= NullLoggerFactory.Instance;
 
-        var parser = new OpenApiDocumentParser(loggerFactory);
+        var parser = new OpenApiDocumentParser(loggerFactory, executionParameters?.OpenApiDocumentParsingFilter);
 
         var restApi = await parser.ParseAsync(
             documentStream,

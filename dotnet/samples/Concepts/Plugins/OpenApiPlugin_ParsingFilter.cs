@@ -9,9 +9,9 @@ using Microsoft.SemanticKernel.Plugins.OpenApi;
 namespace Plugins;
 
 /// <summary>
-/// Sample shows how to register a custom HTTP content reader for an Open API plugin.
+/// TBD
 /// </summary>
-public sealed class CustomHttpContentReaderForOpenApiPlugin(ITestOutputHelper output) : BaseTest(output)
+public sealed class ParsingFilter(ITestOutputHelper output) : BaseTest(output)
 {
     [Fact]
     public async Task ShowReadingJsonAsStreamAsync()
@@ -24,10 +24,30 @@ public sealed class CustomHttpContentReaderForOpenApiPlugin(ITestOutputHelper ou
             output.WriteLine(requestPayload);
         }
 
+        void DocumentParsingFilter(RestApiSpecification specificationModel)
+        {
+            foreach (var operation in specificationModel.Operations)
+            {
+                var parametersWithSameName = operation.Parameters.GroupBy(p => p, p => p.Name);
+
+                if (parametersWithSameName.Count() >= 2)
+                {
+                    foreach (var parameter in operation.Parameters)
+                    {
+                        parameter.AlternativeName = $"{parameter.Location}_{parameter.Name}";
+                    }
+                }
+            }
+        }
+
         using HttpClient httpClient = new(new StubHttpHandler(RequestPayloadHandler));
 
         // Register the custom HTTP content reader
-        var executionParameters = new OpenApiFunctionExecutionParameters() { HttpResponseContentReader = ReadHttpResponseContentAsync };
+        var executionParameters = new OpenApiFunctionExecutionParameters()
+        {
+            HttpClient = httpClient,
+            OpenApiDocumentParsingFilter = DocumentParsingFilter
+        };
 
         // Create OpenAPI plugin
         var plugin = await OpenApiKernelPluginFactory.CreateFromOpenApiAsync("RepairService", "Resources/Plugins/RepairServicePlugin/repair-service-poc.json", executionParameters);
@@ -37,9 +57,10 @@ public sealed class CustomHttpContentReaderForOpenApiPlugin(ITestOutputHelper ou
         {
             ["title"] = "The Case of the Broken Gizmo",
             ["description"] = "It's broken. Send help!",
-            ["assignedTo"] = "Tech Magician"
+            ["Header_assignedTo"] = "Tech Magician",
+            ["Query_assignedTo"] = "Tech Magician"
         };
-        var createResult = await plugin["createRepair"].InvokeAsync(kernel, arguments);
+        var createResult = await plugin["listRepairs"].InvokeAsync(kernel, arguments);
         Console.WriteLine(createResult.ToString());
 
         // List relevant repairs

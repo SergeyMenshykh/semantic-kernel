@@ -71,6 +71,11 @@ public class OpenApiFunctionExecutionParameters
     public HttpResponseContentReader? HttpResponseContentReader { get; set; }
 
     /// <summary>
+    /// TBD
+    /// </summary>
+    public OpenApiDocumentParsingFilter? OpenApiDocumentParsingFilter { get; set; }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="OpenApiFunctionExecutionParameters"/> class.
     /// </summary>
     /// <param name="httpClient">The HttpClient to use for sending HTTP requests.</param>

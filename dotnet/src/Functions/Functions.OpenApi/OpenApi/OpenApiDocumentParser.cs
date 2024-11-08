@@ -42,7 +42,14 @@ public sealed class OpenApiDocumentParser(ILoggerFactory? loggerFactory = null) 
 
         this.AssertReadingSuccessful(result, ignoreNonCompliantErrors);
 
-        return new(ExtractRestApiInfo(result.OpenApiDocument), ExtractRestApiOperations(result.OpenApiDocument, operationsToExclude, this._logger));
+        RestApiSpecification specification = new(ExtractRestApiInfo(result.OpenApiDocument), ExtractRestApiOperations(result.OpenApiDocument, operationsToExclude, this._logger));
+
+        if (documentParsingFilter is not null)
+        {
+            documentParsingFilter(specification);
+        }
+
+        return specification;
     }
 
     #region private
