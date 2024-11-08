@@ -25,7 +25,7 @@ namespace Microsoft.SemanticKernel.Plugins.OpenApi;
 /// <summary>
 /// Parser for OpenAPI documents.
 /// </summary>
-internal sealed class OpenApiDocumentParser(ILoggerFactory? loggerFactory = null) : IOpenApiDocumentParser
+public sealed class OpenApiDocumentParser(ILoggerFactory? loggerFactory = null) : IOpenApiDocumentParser
 {
     /// <inheritdoc/>
     public async Task<RestApiSpecification> ParseAsync(

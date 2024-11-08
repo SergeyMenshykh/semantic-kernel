@@ -7,7 +7,7 @@ namespace Microsoft.SemanticKernel.Plugins.OpenApi;
 /// <summary>
 /// The REST API specification.
 /// </summary>
-internal sealed class RestApiSpecification
+public sealed class RestApiSpecification
 {
     /// <summary>
     /// The REST API information.
@@ -24,7 +24,7 @@ internal sealed class RestApiSpecification
     /// </summary>
     /// <param name="info">REST API information.</param>
     /// <param name="operations">REST API operations.</param>
-    public RestApiSpecification(RestApiInfo info, IList<RestApiOperation> operations)
+    internal RestApiSpecification(RestApiInfo info, IList<RestApiOperation> operations)
     {
         this.Info = info;
         this.Operations = operations;

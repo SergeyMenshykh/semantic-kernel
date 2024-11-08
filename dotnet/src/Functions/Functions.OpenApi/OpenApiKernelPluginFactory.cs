@@ -212,7 +212,7 @@ public static partial class OpenApiKernelPluginFactory
                         variables.TryGetValue(parameter.AlternativeName!, out object? value) &&
                         value is not null)
                     {
-                        arguments.Add(parameter.Name, value);
+                        arguments.Add(parameter.AlternativeName!, value);
                         continue;
                     }
 

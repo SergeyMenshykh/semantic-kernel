@@ -107,6 +107,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\Plugins\RepairServicePlugin\repair-service-poc.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\Plugins\RepairServicePlugin\repair-service.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -118,5 +121,8 @@
     <EmbeddedResource Include="Resources\Agents\*">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Resources\Plugins\RepairServicePlugin\repair-service-poc.json" />
   </ItemGroup>
 </Project>

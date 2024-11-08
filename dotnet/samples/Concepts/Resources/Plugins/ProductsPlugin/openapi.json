@@ -1,0 +1,58 @@
+﻿{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "User Product API",
+    "version": "1.0.0",
+    "description": "API for managing products associated with users"
+  },
+  "paths": {
+    "/users/{id}/products": {
+      "put": {
+        "summary": "Update a product for a specific user",
+        "description": "Update the product details based on the user ID and product ID provided in the payload.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the user",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "The ID of the product to be updated"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "The new name of the product"
+                  },
+                  "price": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "The new price of the product"
+                  }
+                },
+                "required": [ "id" ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful update"
+          }
+        }
+      }
+    }
+  }
+}  
