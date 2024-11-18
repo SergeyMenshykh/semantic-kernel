@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net.Http;
@@ -34,52 +35,132 @@ public sealed class RestApiOperation
     /// <summary>
     /// The operation identifier.
     /// </summary>
-    public string? Id { get; }
+    public string? Id
+    {
+        get => this._id;
+        set
+        {
+            this._freezable.ThrowIfFrozen();
+            this._id = value;
+        }
+    }
 
     /// <summary>
     /// The operation description.
     /// </summary>
-    public string? Description { get; }
+    public string? Description
+    {
+        get => this._description;
+        set
+        {
+            this._freezable.ThrowIfFrozen();
+            this._description = value;
+        }
+    }
 
     /// <summary>
     /// The operation path.
     /// </summary>
-    public string Path { get; }
+    public string Path
+    {
+        get => this._path;
+        set
+        {
+            this._freezable.ThrowIfFrozen();
+            this._path = value;
+        }
+    }
 
     /// <summary>
     /// The operation method - GET, POST, PUT, DELETE.
     /// </summary>
-    public HttpMethod Method { get; }
+    public HttpMethod Method
+    {
+        get => this._method;
+        set
+        {
+            this._freezable.ThrowIfFrozen();
+            this._method = value;
+        }
+    }
 
     /// <summary>
     /// The server.
     /// </summary>
-    public IReadOnlyList<RestApiServer> Servers { get; }
+    public IList<RestApiServer> Servers
+    {
+        get => this._servers;
+        set
+        {
+            this._freezable.ThrowIfFrozen();
+            this._servers = value;
+        }
+    }
 
     /// <summary>
     /// The security requirements.
     /// </summary>
-    public IReadOnlyList<RestApiSecurityRequirement> SecurityRequirements { get; }
+    public IList<RestApiSecurityRequirement> SecurityRequirements
+    {
+        get => this._securityRequirements;
+        set
+        {
+            this._freezable.ThrowIfFrozen();
+            this._securityRequirements = value;
+        }
+    }
 
     /// <summary>
     /// The operation parameters.
     /// </summary>
-    public IReadOnlyList<RestApiParameter> Parameters { get; }
+    public IList<RestApiParameter> Parameters
+    {
+        get => this._parameters;
+        set
+        {
+            this._freezable.ThrowIfFrozen();
+            this._parameters = value;
+        }
+    }
 
     /// <summary>
     /// The list of possible operation responses.
     /// </summary>
-    public IReadOnlyDictionary<string, RestApiExpectedResponse> Responses { get; }
+    public IDictionary<string, RestApiExpectedResponse> Responses
+    {
+        get => this._responses;
+        set
+        {
+            this._freezable.ThrowIfFrozen();
+            this._responses = value;
+        }
+    }
 
     /// <summary>
     /// The operation payload.
     /// </summary>
-    public RestApiPayload? Payload { get; }
+    public RestApiPayload? Payload
+    {
+        get => this._payload;
+        set
+        {
+            this._freezable.ThrowIfFrozen();
+            this._payload = value;
+        }
+    }
 
     /// <summary>
     /// Additional unstructured metadata about the operation.
     /// </summary>
-    public IReadOnlyDictionary<string, object?> Extensions { get; init; } = s_emptyDictionary;
+    public IDictionary<string, object?> Extensions
+    {
+        get => this._extensions;
+        set
+        {
+            this._freezable.ThrowIfFrozen();
+            this._extensions = value;
+        }
+    }
 
     /// <summary>
     /// Creates an instance of a <see cref="RestApiOperation"/> class.
@@ -95,26 +176,26 @@ public sealed class RestApiOperation
     /// <param name="payload">The operation payload.</param>
     internal RestApiOperation(
         string? id,
-        IReadOnlyList<RestApiServer> servers,
+        IList<RestApiServer> servers,
         string path,
         HttpMethod method,
         string? description,
-        IReadOnlyList<RestApiParameter> parameters,
-        IReadOnlyDictionary<string, RestApiExpectedResponse> responses,
-        IReadOnlyList<RestApiSecurityRequirement> securityRequirements,
+        IList<RestApiParameter> parameters,
+        IDictionary<string, RestApiExpectedResponse> responses,
+        IList<RestApiSecurityRequirement> securityRequirements,
         RestApiPayload? payload = null)
     {
-        this.Id = id;
-        this.Servers = servers;
-        this.Path = path;
-        this.Method = method;
-        this.Description = description;
-        this.Parameters = parameters;
-        this.Responses = responses;
-        this.SecurityRequirements = securityRequirements;
-        this.Payload = payload;
-        this.Responses = responses ?? new Dictionary<string, RestApiExpectedResponse>();
-        this.SecurityRequirements = securityRequirements;
+        this._id = id;
+        this._servers = servers;
+        this._path = path;
+        this._method = method;
+        this._description = description;
+        this._parameters = parameters;
+        this._responses = responses;
+        this._securityRequirements = securityRequirements;
+        this._payload = payload;
+        this._responses = responses ?? new Dictionary<string, RestApiExpectedResponse>();
+        this._securityRequirements = securityRequirements;
     }
 
     /// <summary>
@@ -210,6 +291,8 @@ public sealed class RestApiOperation
     /// </summary>
     internal void Freeze()
     {
+        this._freezable.Freeze();
+
         this.Payload?.Freeze();
 
         foreach (var parameter in this.Parameters)
@@ -221,6 +304,8 @@ public sealed class RestApiOperation
         {
             server.Freeze();
         }
+
+        var r = new ReadOnlyCollection<string>(new List<string>());
     }
 
     #region private
@@ -357,6 +442,17 @@ public sealed class RestApiOperation
         { RestApiParameterStyle.SpaceDelimited, SpaceDelimitedStyleParameterSerializer.Serialize },
         { RestApiParameterStyle.PipeDelimited, PipeDelimitedStyleParameterSerializer.Serialize }
     };
+    private string? _id;
+    private string? _description;
+    private string _path;
+    private HttpMethod _method;
+    private IList<RestApiServer> _servers;
+    private IList<RestApiSecurityRequirement> _securityRequirements;
+    private IDictionary<string, RestApiExpectedResponse> _responses;
+    private RestApiPayload? _payload;
+    private IDictionary<string, object?> _extensions = s_emptyDictionary;
+    private IList<RestApiParameter> _parameters;
+    private readonly Freezable _freezable = new();
 
-    # endregion
+    #endregion
 }

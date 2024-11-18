@@ -73,7 +73,7 @@ internal static partial class RestApiOperationExtensions
     /// <param name="responses">Possible REST API responses.</param>
     /// <param name="preferredResponses">The preferred response codes to use when selecting the default response.</param>
     /// <returns>The default response, if any.</returns>
-    private static RestApiExpectedResponse? GetDefaultResponse(IReadOnlyDictionary<string, RestApiExpectedResponse> responses, string[] preferredResponses)
+    private static RestApiExpectedResponse? GetDefaultResponse(IDictionary<string, RestApiExpectedResponse> responses, string[] preferredResponses)
     {
         foreach (var code in preferredResponses)
         {
