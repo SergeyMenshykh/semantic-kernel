@@ -145,7 +145,7 @@ internal partial class ClientCore
 
         for (int requestIndex = 0; ; requestIndex++)
         {
-            var chatForRequest = CreateChatCompletionMessages(chatExecutionSettings, chatHistory);
+            var chatForRequest = this.CreateChatCompletionMessages(chatExecutionSettings, chatHistory);
 
             var functionCallingConfig = this.GetFunctionCallingConfiguration(kernel, chatExecutionSettings, chatHistory, requestIndex);
 
@@ -194,7 +194,7 @@ internal partial class ClientCore
                 chatMessageContent,
                 chatHistory,
                 requestIndex,
-                (FunctionCallContent content) => IsRequestableTool(chatOptions.Tools, content),
+                (FunctionCallContent content) => this.IsRequestableTool(chatOptions.Tools, content),
                 functionCallingConfig.Options ?? new FunctionChoiceBehaviorOptions(),
                 kernel,
                 isStreaming: false,
@@ -237,7 +237,7 @@ internal partial class ClientCore
 
         for (int requestIndex = 0; ; requestIndex++)
         {
-            var chatForRequest = CreateChatCompletionMessages(chatExecutionSettings, chatHistory);
+            var chatForRequest = this.CreateChatCompletionMessages(chatExecutionSettings, chatHistory);
 
             var functionCallingConfig = this.GetFunctionCallingConfiguration(kernel, chatExecutionSettings, chatHistory, requestIndex);
 
@@ -375,7 +375,7 @@ internal partial class ClientCore
                 chatMessageContent,
                 chatHistory,
                 requestIndex,
-                (FunctionCallContent content) => IsRequestableTool(chatOptions.Tools, content),
+                (FunctionCallContent content) => this.IsRequestableTool(chatOptions.Tools, content),
                 functionCallingConfig.Options ?? new FunctionChoiceBehaviorOptions(),
                 kernel,
                 isStreaming: true,
@@ -559,12 +559,12 @@ internal partial class ClientCore
     }
 
     /// <summary>Checks if a tool call is for a function that was defined.</summary>
-    private static bool IsRequestableTool(IList<ChatTool> tools, FunctionCallContent functionCallContent)
+    private bool IsRequestableTool(IList<ChatTool> tools, FunctionCallContent functionCallContent)
     {
         for (int i = 0; i < tools.Count; i++)
         {
             if (tools[i].Kind == ChatToolKind.Function &&
-                string.Equals(tools[i].FunctionName, FunctionName.ToFullyQualifiedName(functionCallContent.FunctionName, functionCallContent.PluginName, OpenAIFunction.NameSeparator), StringComparison.OrdinalIgnoreCase))
+                string.Equals(tools[i].FunctionName, this.CreateFunctionFqn(functionCallContent.FunctionName, functionCallContent.PluginName), StringComparison.OrdinalIgnoreCase))
             {
                 return true;
             }
@@ -600,7 +600,7 @@ internal partial class ClientCore
         return chat;
     }
 
-    private static List<ChatMessage> CreateChatCompletionMessages(OpenAIPromptExecutionSettings executionSettings, ChatHistory chatHistory)
+    private List<ChatMessage> CreateChatCompletionMessages(OpenAIPromptExecutionSettings executionSettings, ChatHistory chatHistory)
     {
         List<ChatMessage> messages = [];
 
@@ -611,13 +611,13 @@ internal partial class ClientCore
 
         foreach (var message in chatHistory)
         {
-            messages.AddRange(CreateRequestMessages(message));
+            messages.AddRange(this.CreateRequestMessages(message));
         }
 
         return messages;
     }
 
-    private static List<ChatMessage> CreateRequestMessages(ChatMessageContent message)
+    private List<ChatMessage> CreateRequestMessages(ChatMessageContent message)
     {
         if (message.Role == AuthorRole.System)
         {
@@ -739,7 +739,7 @@ internal partial class ClientCore
 
                 var argument = JsonSerializer.Serialize(callRequest.Arguments);
 
-                toolCalls.Add(ChatToolCall.CreateFunctionToolCall(callRequest.Id, FunctionName.ToFullyQualifiedName(callRequest.FunctionName, callRequest.PluginName, OpenAIFunction.NameSeparator), BinaryData.FromString(argument ?? string.Empty)));
+                toolCalls.Add(ChatToolCall.CreateFunctionToolCall(callRequest.Id, this.CreateFunctionFqn(callRequest.FunctionName, callRequest.PluginName), BinaryData.FromString(argument ?? string.Empty)));
             }
 
             // This check is necessary to prevent an exception that will be thrown if the toolCalls collection is empty.
@@ -860,7 +860,7 @@ internal partial class ClientCore
                     }
                 }
 
-                var functionName = FunctionName.Parse(toolCall.FunctionName, OpenAIFunction.NameSeparator);
+                var functionName = this.ParseFunctionFqn(toolCall.FunctionName);
 
                 var functionCallContent = new FunctionCallContent(
                     functionName: functionName.Name,
@@ -1020,7 +1020,8 @@ internal partial class ClientCore
 
             foreach (var function in functions)
             {
-                tools.Add(function.Metadata.ToOpenAIFunction().ToFunctionDefinition(config?.Options?.AllowStrictSchemaAdherence ?? false));
+                var functionName = this.CreateFunctionFqn(function.Name, function.PluginName);
+                tools.Add(function.Metadata.ToOpenAIFunction().ToFunctionDefinition(config?.Options?.AllowStrictSchemaAdherence ?? false, functionName));
             }
         }
 
@@ -1050,5 +1051,31 @@ internal partial class ClientCore
 
             chatHistory.Add(message);
         }
+    }
+
+    /// <summary>
+    /// Creates the fully qualified name (FQN) of the function.
+    /// </summary>
+    /// <param name="functionName">The name of the function.</param>
+    /// <param name="pluginName">The name of the plugin.</param>
+    /// <returns>The fully qualified name (FQN) of the function.</returns>
+    private string CreateFunctionFqn(string functionName, string? pluginName = null)
+    {
+        return FunctionName.ToFullyQualifiedName(functionName, this.FunctionNamePolicy.UseFunctionNameOnly ? null : pluginName, this.FunctionNamePolicy.FunctionNameSeparator);
+    }
+
+    /// <summary>
+    /// Parses a fully qualified name (FQN) of a function.
+    /// </summary>
+    /// <param name="fullyQualifiedName">The fully qualified name of the function.</param>
+    /// <returns>A FunctionName object representing the parsed function.</returns>
+    private FunctionName ParseFunctionFqn(string fullyQualifiedName)
+    {
+        if (this.FunctionNamePolicy.UseFunctionNameOnly)
+        {
+            return new FunctionName(fullyQualifiedName);
+        }
+
+        return FunctionName.Parse(fullyQualifiedName, this.FunctionNamePolicy.FunctionNameSeparator);
     }
 }
