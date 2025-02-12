@@ -1,0 +1,6 @@
+@GroundedInferenceAPI_HostAddress = http://localhost:5105
+
+GET {{GroundedInferenceAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
