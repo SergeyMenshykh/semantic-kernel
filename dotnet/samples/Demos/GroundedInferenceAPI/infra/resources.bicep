@@ -4,13 +4,15 @@ param location string = resourceGroup().location
 @description('Tags that will be applied to all resources')
 param tags object = {}
 
-
 param groundedInferenceApiExists bool
 @secure()
 param groundedInferenceApiDefinition object
 
 @description('Id of the user or app to assign application roles')
 param principalId string
+
+@description('The AI Service Account full ARM Resource ID. This is an optional field, and if not provided, the resource will be created.')
+param aiServiceAccountResourceId string = ''
 
 var abbrs = loadJsonContent('./abbreviations.json')
 var resourceToken = uniqueString(subscription().id, resourceGroup().id, location)
@@ -169,6 +171,24 @@ module keyVault 'br/public:avm/res/key-vault/vault:0.6.1' = {
     ]
   }
 }
+
+// Creare AI services
+module aiDependencies './modules/create-azure-ai-service.bicep' = {
+  name: 'ai-service'
+  params: {
+    aiServicesName: '${abbrs.cognitiveServicesAccounts}${resourceToken}'
+    aiServiceAccountResourceId: aiServiceAccountResourceId
+
+     // Model deployment parameters
+     modelName: 'gpt-4o-mini'
+     modelFormat: 'OpenAI'
+     modelVersion: '2024-07-18'
+     modelSkuName: 'GlobalStandard'
+     modelCapacity: 50
+     modelLocation: location
+  }
+}
+
 output AZURE_CONTAINER_REGISTRY_ENDPOINT string = containerRegistry.outputs.loginServer
 output AZURE_KEY_VAULT_ENDPOINT string = keyVault.outputs.uri
 output AZURE_KEY_VAULT_NAME string = keyVault.outputs.name
