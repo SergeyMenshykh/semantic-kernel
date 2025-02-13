@@ -32,7 +32,7 @@ public class CompletionsController : ControllerBase
     /// </summary>
     /// <param name="prompt">The prompt to complete</param>
     /// <param name="cancellationToken">The cancellation token</param>
-    [HttpPost(Name = "Complete")]
+    [HttpPost("Complete/{prompt}")]
     public async Task<string> CompleteAsync(string prompt, CancellationToken cancellationToken)
     {
         FunctionResult result = await this._kernel.InvokePromptAsync(prompt, cancellationToken: cancellationToken).ConfigureAwait(false);
@@ -45,8 +45,8 @@ public class CompletionsController : ControllerBase
     /// </summary>
     /// <param name="prompt">The prompt to complete</param>
     /// <param name="cancellationToken">The cancellation token</param>
-    [HttpPost(Name = "Complete")]
-    public async IAsyncEnumerable<string> CompleteStreamingAsync(string prompt, [EnumeratorCancellation]CancellationToken cancellationToken)
+    [HttpPost("CompleteStreaming/{prompt}")]
+    public async IAsyncEnumerable<string> CompleteStreamingAsync(string prompt, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         IAsyncEnumerable<StreamingKernelContent> content = this._kernel.InvokePromptStreamingAsync(prompt, cancellationToken: cancellationToken);
 

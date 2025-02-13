@@ -47,8 +47,8 @@ public class Program
         IKernelBuilder kernelBuilder = services.AddKernel();
 
         kernelBuilder.AddAzureOpenAIChatCompletion(
-            deploymentName: "",
-            endpoint: "",
+            deploymentName: "TBD",
+            endpoint: "TBD",
             credentials: new DefaultAzureCredential());
     }
 }
