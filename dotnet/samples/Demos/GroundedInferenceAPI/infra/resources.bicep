@@ -14,6 +14,9 @@ param principalId string
 @description('The AI Service Account full ARM Resource ID. This is an optional field, and if not provided, the resource will be created.')
 param aiServiceAccountResourceId string = ''
 
+@description('Azure OpenAI chat model name')
+param azureOpenAIChatModelName string
+
 var abbrs = loadJsonContent('./abbreviations.json')
 var resourceToken = uniqueString(subscription().id, resourceGroup().id, location)
 
@@ -64,6 +67,41 @@ module groundedInferenceApiIdentity 'br/public:avm/res/managed-identity/user-ass
   params: {
     name: '${abbrs.managedIdentityUserAssignedIdentities}groundedInferenceApi-${resourceToken}'
     location: location
+  }
+}
+
+// Create a keyvault to store secrets
+module keyVault 'br/public:avm/res/key-vault/vault:0.6.1' = {
+  name: 'keyvault'
+  params: {
+    name: '${abbrs.keyVaultVaults}${resourceToken}'
+    location: location
+    tags: tags
+    enableRbacAuthorization: false
+    accessPolicies: [
+      {
+        objectId: principalId
+        permissions: {
+          secrets: [ 'get', 'list' ]
+        }
+      }
+      {
+        objectId: groundedInferenceApiIdentity.outputs.principalId
+        permissions: {
+          secrets: [ 'get', 'list' ]
+        }
+      }
+    ]
+    secrets: [
+        {
+            name: 'AIServices--AzureOpenAI--ChatDeploymentName'
+            value: azureOpenAIChatModelName
+        }
+        {
+            name: 'AIServices--AzureOpenAI--Endpoint'
+            value: aiDependencies.outputs.AZURE_AI_SERVICE_ENDPOINT
+        }
+    ]
   }
 }
 
@@ -122,6 +160,10 @@ module groundedInferenceApi 'br/public:avm/res/app/container-app:0.8.0' = {
             name: 'PORT'
             value: '8080'
           }
+          {
+            name: 'AZURE_KEY_VAULT_ENDPOINT'
+            value: keyVault.outputs.uri
+          }
         ],
         groundedInferenceApiEnv,
         map(groundedInferenceApiSecrets, secret => {
@@ -145,32 +187,6 @@ module groundedInferenceApi 'br/public:avm/res/app/container-app:0.8.0' = {
     tags: union(tags, { 'azd-service-name': 'grounded-inference-api' })
   }
 }
-// Create a keyvault to store secrets
-module keyVault 'br/public:avm/res/key-vault/vault:0.6.1' = {
-  name: 'keyvault'
-  params: {
-    name: '${abbrs.keyVaultVaults}${resourceToken}'
-    location: location
-    tags: tags
-    enableRbacAuthorization: false
-    accessPolicies: [
-      {
-        objectId: principalId
-        permissions: {
-          secrets: [ 'get', 'list' ]
-        }
-      }
-      {
-        objectId: groundedInferenceApiIdentity.outputs.principalId
-        permissions: {
-          secrets: [ 'get', 'list' ]
-        }
-      }
-    ]
-    secrets: [
-    ]
-  }
-}
 
 // Creare AI services
 module aiDependencies './modules/create-azure-ai-service.bicep' = {
@@ -179,8 +195,13 @@ module aiDependencies './modules/create-azure-ai-service.bicep' = {
     aiServicesName: '${abbrs.cognitiveServicesAccounts}${resourceToken}'
     aiServiceAccountResourceId: aiServiceAccountResourceId
 
+    // Identity
+    managedIdentityResourceId: groundedInferenceApiIdentity.outputs.resourceId
+    managedIdentityPrincipalId: groundedInferenceApiIdentity.outputs.principalId
+    userPrincipalId: principalId
+
      // Model deployment parameters
-     modelName: 'gpt-4o-mini'
+     modelName: azureOpenAIChatModelName
      modelFormat: 'OpenAI'
      modelVersion: '2024-07-18'
      modelSkuName: 'GlobalStandard'
@@ -193,3 +214,4 @@ output AZURE_CONTAINER_REGISTRY_ENDPOINT string = containerRegistry.outputs.logi
 output AZURE_KEY_VAULT_ENDPOINT string = keyVault.outputs.uri
 output AZURE_KEY_VAULT_NAME string = keyVault.outputs.name
 output AZURE_RESOURCE_GROUNDED_INFERENCE_API_ID string = groundedInferenceApi.outputs.resourceId
+output AZURE_AI_SERVICE_ENDPOINT string = aiDependencies.outputs.AZURE_AI_SERVICE_ENDPOINT

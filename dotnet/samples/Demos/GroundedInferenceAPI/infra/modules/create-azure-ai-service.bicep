@@ -4,6 +4,9 @@ param aiServicesName string
 @description('Model name for deployment')
 param modelName string 
 
+@description('Model deployment name')
+param deploymentName string = modelName
+
 @description('Model format for deployment')
 param modelFormat string 
 
@@ -22,6 +25,15 @@ param modelLocation string
 @description('The AI Service Account full ARM Resource ID. This is an optional field, and if not provided, the resource will be created.')
 param aiServiceAccountResourceId string
 
+@description('Managed identity resource ID')
+param managedIdentityResourceId string
+
+@description('Managed identity principal ID')
+param managedIdentityPrincipalId string
+
+@description('User principal ID')
+param userPrincipalId string
+
 var aiServiceExists = aiServiceAccountResourceId != ''
 
 var aiServiceParts = split(aiServiceAccountResourceId, '/')
@@ -39,7 +51,10 @@ resource aiServices 'Microsoft.CognitiveServices/accounts@2024-10-01' = if(!aiSe
   }
   kind: 'AIServices' // or 'OpenAI'
   identity: {
-    type: 'SystemAssigned'
+    type: 'UserAssigned'
+    userAssignedIdentities: {  
+      '${managedIdentityResourceId}': {}  
+    }  
   }
   properties: {
     customSubDomainName: toLower('${toLower(aiServicesName)}')
@@ -50,9 +65,37 @@ resource aiServices 'Microsoft.CognitiveServices/accounts@2024-10-01' = if(!aiSe
   }
 }
 
+// Cognitive Services OpenAI User. Ability to view files, models, deployments. Readers can't make any changes They can inference and create images
+resource cognitiveServicesOpenAIUserRole 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
+  name: '5e0bd9bd-7b93-4f28-af87-19fc36ad61bd'
+  scope: resourceGroup()
+}
+
+// This role assignment grants the managed identity the required permissions to access the AI services such as Azure OpenAI. 
+resource managedIdentityPrincipalOpenAIUserRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  scope: aiServices
+  name: guid(aiServicesName, cognitiveServicesOpenAIUserRole.id, aiServices.id)
+  properties: {
+    principalId: managedIdentityPrincipalId
+    roleDefinitionId: cognitiveServicesOpenAIUserRole.id
+    principalType: 'ServicePrincipal'
+  }
+}
+
+// This role assignment grants the user the required permissions to access the AI services such as Azure OpenAI.
+resource userPrincipalOpenAIUserRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  scope: aiServices
+  name: guid(aiServicesName, userPrincipalId, aiServices.id)
+  properties: {
+    principalId: userPrincipalId
+    roleDefinitionId: cognitiveServicesOpenAIUserRole.id
+    principalType: 'User'
+  }
+}
+
 resource modelDeployment 'Microsoft.CognitiveServices/accounts/deployments@2024-10-01'= if(!aiServiceExists) {
   parent: aiServices
-  name: modelName
+  name: deploymentName
   sku : {
     capacity: modelCapacity
     name: modelSkuName
@@ -66,8 +109,4 @@ resource modelDeployment 'Microsoft.CognitiveServices/accounts/deployments@2024-
   }
 }
 
-output aiServicesName string =  aiServiceExists ? existingAIServiceAccount.name : aiServicesName
-output aiservicesID string = aiServiceExists ? existingAIServiceAccount.id : aiServices.id
-output aiservicesTarget string = aiServiceExists ? existingAIServiceAccount.properties.endpoint : aiServices.properties.endpoint
-output aiServiceAccountResourceGroupName string = aiServiceExists ? aiServiceParts[4] : resourceGroup().name
-output aiServiceAccountSubscriptionId string = aiServiceExists ? aiServiceParts[2] : subscription().subscriptionId
+ output AZURE_AI_SERVICE_ENDPOINT string = aiServiceExists ? existingAIServiceAccount.properties.endpoints['OpenAI Language Model Instance API'] : aiServices.properties.endpoints['OpenAI Language Model Instance API']
