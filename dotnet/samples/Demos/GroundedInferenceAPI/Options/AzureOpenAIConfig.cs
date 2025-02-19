@@ -2,7 +2,7 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace GroundedInferenceAPI.Config;
+namespace GroundedInferenceAPI.Options;
 
 /// <summary>
 /// Azure OpenAI service settings.

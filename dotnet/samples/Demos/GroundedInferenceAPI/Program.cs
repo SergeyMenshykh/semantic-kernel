@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 
 using Azure.Identity;
-using GroundedInferenceAPI.Config;
+using GroundedInferenceAPI.Options;
 using Microsoft.SemanticKernel;
 
 namespace GroundedInferenceAPI;
@@ -67,11 +67,13 @@ public class Program
         var appConfig = new ApplicationConfig(builder.Configuration);
         if (!builder.Environment.IsProduction())
         {
+            // Use chat deployment name deployed and provisioned by azd if no value is already available in user secrets.
             if (string.IsNullOrEmpty(appConfig.AzureOpenAIConfig.ChatDeploymentName))
             {
                 appConfig.AzureOpenAIConfig.ChatDeploymentName = builder.Configuration["AZURE_OPENAI_CHAT_MODEL_NAME"] ?? string.Empty;
             }
 
+            // Use chat endpoint of Azure AI Service deployed and provisioned by azd if no value is already available in user secrets.
             if (string.IsNullOrEmpty(appConfig.AzureOpenAIConfig.Endpoint))
             {
                 appConfig.AzureOpenAIConfig.Endpoint = builder.Configuration["AZURE_AI_SERVICE_ENDPOINT"] ?? string.Empty;
@@ -90,6 +92,12 @@ public class Program
                     appConfig.AzureOpenAIConfig.ChatDeploymentName,
                     appConfig.AzureOpenAIConfig.Endpoint,
                     new DefaultAzureCredential());
+                break;
+            case "OpenAI":
+                kernelBuilder.AddOpenAIChatCompletion(
+                    appConfig.OpenAIConfig.ChatModelId,
+                    appConfig.OpenAIConfig.ApiKey,
+                    appConfig.OpenAIConfig.OrgId);
                 break;
             default:
                 throw new NotSupportedException($"AI Chat Service type '{appConfig.RagConfig.AIChatService}' is not supported.");
