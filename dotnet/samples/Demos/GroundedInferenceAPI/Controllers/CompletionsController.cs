@@ -11,6 +11,7 @@ namespace GroundedInferenceAPI.Controllers;
 /// </summary>
 [ApiController]
 [Route("[controller]")]
+[Consumes("application/json")]
 public class CompletionsController : ControllerBase
 {
     private readonly ILogger<CompletionsController> _logger;
@@ -30,12 +31,12 @@ public class CompletionsController : ControllerBase
     /// <summary>
     /// Get completion for a given prompt
     /// </summary>
-    /// <param name="prompt">The prompt to complete</param>
+    /// <param name="request">The request</param>
     /// <param name="cancellationToken">The cancellation token</param>
-    [HttpPost("Complete/{prompt}")]
-    public async Task<string> CompleteAsync(string prompt, CancellationToken cancellationToken)
+    [HttpPost("Complete")]
+    public async Task<string> CompleteAsync([FromBody] PromptRequest request, CancellationToken cancellationToken)
     {
-        FunctionResult result = await this._kernel.InvokePromptAsync(prompt, cancellationToken: cancellationToken).ConfigureAwait(false);
+        FunctionResult result = await this._kernel.InvokePromptAsync(request.Prompt, cancellationToken: cancellationToken).ConfigureAwait(false);
 
         return result.ToString();
     }
@@ -43,12 +44,12 @@ public class CompletionsController : ControllerBase
     /// <summary>
     /// Get streaming completion for a given prompt
     /// </summary>
-    /// <param name="prompt">The prompt to complete</param>
+    /// <param name="request">The request</param>
     /// <param name="cancellationToken">The cancellation token</param>
-    [HttpPost("CompleteStreaming/{prompt}")]
-    public async IAsyncEnumerable<string> CompleteStreamingAsync(string prompt, [EnumeratorCancellation] CancellationToken cancellationToken)
+    [HttpPost("CompleteStreaming")]
+    public async IAsyncEnumerable<string> CompleteStreamingAsync([FromBody] PromptRequest request, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        IAsyncEnumerable<StreamingKernelContent> content = this._kernel.InvokePromptStreamingAsync(prompt, cancellationToken: cancellationToken);
+        IAsyncEnumerable<StreamingKernelContent> content = this._kernel.InvokePromptStreamingAsync(request.Prompt, cancellationToken: cancellationToken);
 
         await foreach (StreamingKernelContent item in content.ConfigureAwait(false))
         {
