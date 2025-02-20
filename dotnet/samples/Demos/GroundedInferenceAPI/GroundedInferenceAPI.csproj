@@ -7,6 +7,7 @@
     <UserSecretsId>a5b172f9-a85a-448e-b4f4-771661c8bf43</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>..\..\..</DockerfileContext>
+    <NoWarn>$(NoWarn);SKEXP0001;SKEXP0010;SKEXP0020</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,6 +15,7 @@
     <PackageReference Include="Azure.Identity" />
     <PackageReference Include="Microsoft.SemanticKernel.Abstractions" />
     <PackageReference Include="Microsoft.SemanticKernel.Connectors.AzureOpenAI" />
+    <PackageReference Include="Microsoft.SemanticKernel.Connectors.InMemory" />
     <PackageReference Include="Microsoft.SemanticKernel.Connectors.OpenAI" />
     <PackageReference Include="Microsoft.SemanticKernel.Core" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" />

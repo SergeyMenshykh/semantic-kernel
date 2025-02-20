@@ -19,4 +19,16 @@ public sealed class RagConfig
     /// </summary>
     [Required]
     public string AIChatService { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The name of the vector store.
+    /// </summary>
+    [Required]
+    public string VectorStore { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The name of the collection.
+    /// </summary>
+    [Required]
+    public string CollectionName { get; set; } = string.Empty;
 }

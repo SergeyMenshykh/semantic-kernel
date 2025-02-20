@@ -1,8 +1,8 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 
 using Azure.Identity;
+using GroundedInferenceAPI.Model;
 using GroundedInferenceAPI.Options;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.SemanticKernel;
 
 namespace GroundedInferenceAPI;
@@ -88,6 +88,7 @@ public class Program
 
     private static void AddAndConfigureAiServices(IKernelBuilder kernelBuilder, ApplicationConfig appConfig)
     {
+        // Register AI service
         switch (appConfig.RagConfig.AIChatService)
         {
             case "AzureOpenAI":
@@ -104,6 +105,17 @@ public class Program
                 break;
             default:
                 throw new NotSupportedException($"AI Chat Service type '{appConfig.RagConfig.AIChatService}' is not supported.");
+        }
+
+        // Register vector store
+        switch (appConfig.RagConfig.VectorStore)
+        {
+            case "InMemory":
+                kernelBuilder.AddInMemoryVectorStoreRecordCollection<string, TextSnippet<string>>(
+                    appConfig.RagConfig.CollectionName);
+                break;
+            default:
+                throw new NotSupportedException($"Vector store type '{appConfig.RagConfig.VectorStore}' is not supported.");
         }
     }
 }
