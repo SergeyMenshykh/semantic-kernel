@@ -124,7 +124,7 @@ var groundedInferenceApiEnv = map(filter(groundedInferenceApiAppSettingsArray, i
   value: i.value
 })
 
-module groundedInferenceApi 'br/public:avm/res/app/container-app:0.8.0' = {
+module groundedInferenceApi 'br/public:avm/res/app/container-app:0.12.0' = {
   name: 'groundedInferenceApi'
   params: {
     name: 'grounded-inference-api'
@@ -208,6 +208,45 @@ module aiDependencies './modules/create-azure-ai-service.bicep' = {
      modelCapacity: 50
      modelLocation: location
   }
+}
+
+// Create Azure Entra application registration
+module entraApp './modules/create-entra-application.bicep' = {
+    name: 'entra-app'
+    params: {
+        applicationName: 'grounded-inference-api-${resourceToken}'
+        applicationDisplayName: 'grounded-inference-api-${resourceToken}'
+        webAppEndpoint: 'https://${groundedInferenceApi.outputs.fqdn}'
+    }
+}
+
+// Configure identity provider
+resource apiAuth 'Microsoft.App/containerApps/authConfigs@2024-10-02-preview' = {
+    name: 'grounded-inference-api/current'
+    properties: {
+        identityProviders: {
+            azureActiveDirectory: {
+                enabled: true
+                isAutoProvisioned: true
+                registration: {
+                    clientId: entraApp.outputs.appId
+                    openIdIssuer: 'https://sts.windows.net/${subscription().tenantId}/v2.0'
+                }
+                validation: {
+                    allowedAudiences: []
+                    defaultAuthorizationPolicy: {
+                      allowedApplications: [
+                        entraApp.outputs.appId
+                      ]
+                      allowedPrincipals: {}
+                    }
+                }
+            }
+        }
+        platform:{
+            enabled: true
+        }
+    }
 }
 
 output AZURE_CONTAINER_REGISTRY_ENDPOINT string = containerRegistry.outputs.loginServer

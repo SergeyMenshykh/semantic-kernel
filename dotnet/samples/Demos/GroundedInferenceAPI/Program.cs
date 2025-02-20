@@ -2,6 +2,7 @@
 
 using Azure.Identity;
 using GroundedInferenceAPI.Options;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.SemanticKernel;
 
 namespace GroundedInferenceAPI;
@@ -16,7 +17,8 @@ public class Program
 
         builder.Services.AddSingleton<ApplicationConfig>((_) => appConfig);
 
-        // Add services to the container.
+        builder.Services.AddAuthentication();
+
         builder.Services.AddControllers();
 
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -35,6 +37,7 @@ public class Program
 
         app.UseHttpsRedirection();
 
+        app.UseAuthentication();
         app.UseAuthorization();
 
         app.MapControllers();
