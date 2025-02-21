@@ -21,6 +21,12 @@ public sealed class RagConfig
     public string AIChatService { get; set; } = string.Empty;
 
     /// <summary>
+    /// The name of the AI embedding service.
+    /// </summary>
+    [Required]
+    public string AIEmbeddingService { get; set; } = string.Empty;
+
+    /// <summary>
     /// The name of the vector store.
     /// </summary>
     [Required]

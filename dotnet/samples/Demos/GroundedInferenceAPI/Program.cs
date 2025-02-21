@@ -76,6 +76,12 @@ public class Program
                 appConfig.AzureOpenAIConfig.ChatDeploymentName = builder.Configuration["AZURE_OPENAI_CHAT_MODEL_NAME"] ?? string.Empty;
             }
 
+            // Use embeddings deployment name deployed and provisioned by azd if no value is already available in user secrets.
+            if (string.IsNullOrEmpty(appConfig.AzureOpenAIEmbeddingsConfig.DeploymentName))
+            {
+                appConfig.AzureOpenAIEmbeddingsConfig.DeploymentName = builder.Configuration["AZURE_OPENAI_EMBEDDINGS_MODEL_NAME"] ?? string.Empty;
+            }
+
             // Use chat endpoint of Azure AI Service deployed and provisioned by azd if no value is already available in user secrets.
             if (string.IsNullOrEmpty(appConfig.AzureOpenAIConfig.Endpoint))
             {
@@ -105,6 +111,19 @@ public class Program
                 break;
             default:
                 throw new NotSupportedException($"AI Chat Service type '{appConfig.RagConfig.AIChatService}' is not supported.");
+        }
+
+        // Register embeddings AI service
+        switch (appConfig.RagConfig.AIEmbeddingService)
+        {
+            case "AzureOpenAIEmbeddings":
+                kernelBuilder.AddAzureOpenAITextEmbeddingGeneration(
+                    appConfig.AzureOpenAIEmbeddingsConfig.DeploymentName,
+                    appConfig.AzureOpenAIEmbeddingsConfig.Endpoint,
+                    new AzureCliCredential());
+                break;
+            default:
+                throw new NotSupportedException($"AI Embedding Service '{appConfig.RagConfig.AIEmbeddingService}' is not supported.");
         }
 
         // Register vector store

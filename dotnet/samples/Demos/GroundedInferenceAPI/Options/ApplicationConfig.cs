@@ -7,7 +7,9 @@ namespace GroundedInferenceAPI.Options;
 /// </summary>
 public sealed class ApplicationConfig
 {
-    private readonly AzureOpenAIConfig _azureOpenAIConfig;
+    private readonly OpenAIConfig _openAIConfig = new();
+    private readonly AzureOpenAIConfig _azureOpenAIConfig = new();
+    private readonly AzureOpenAIEmbeddingsConfig _azureOpenAIEmbeddingsConfig = new();
     private readonly RagConfig _ragConfig = new();
 
     /// <summary>
@@ -22,7 +24,10 @@ public sealed class ApplicationConfig
             .Bind(this._azureOpenAIConfig);
         configurationManager
             .GetRequiredSection($"AIServices:{OpenAIConfig.ConfigSectionName}")
-            .Bind(this.OpenAIConfig);
+            .Bind(this._openAIConfig);
+        configurationManager
+            .GetRequiredSection($"AIServices:{AzureOpenAIEmbeddingsConfig.ConfigSectionName}")
+            .Bind(this._azureOpenAIEmbeddingsConfig);
         configurationManager
             .GetRequiredSection(RagConfig.ConfigSectionName)
             .Bind(this._ragConfig);
@@ -36,7 +41,12 @@ public sealed class ApplicationConfig
     /// <summary>
     /// Gets the OpenAI configuration.
     /// </summary>
-    public OpenAIConfig OpenAIConfig { get; set; } = new();
+    public OpenAIConfig OpenAIConfig => this._openAIConfig;
+
+    /// <summary>
+    /// Gets the Azure OpenAI embeddings configuration.
+    /// </summary>
+    public AzureOpenAIEmbeddingsConfig AzureOpenAIEmbeddingsConfig => this._azureOpenAIEmbeddingsConfig;
 
     /// <summary>
     /// Gets the RAG configuration.
