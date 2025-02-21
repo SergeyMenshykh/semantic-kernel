@@ -17,6 +17,9 @@ param aiServiceAccountResourceId string = ''
 @description('Azure OpenAI chat model name')
 param azureOpenAIChatModelName string
 
+@description('Azure OpenAI embeddings model name')
+param azureOpenAIEmbeddingsModelName string
+
 var abbrs = loadJsonContent('./abbreviations.json')
 var resourceToken = uniqueString(subscription().id, resourceGroup().id, location)
 
@@ -96,6 +99,10 @@ module keyVault 'br/public:avm/res/key-vault/vault:0.6.1' = {
         {
             name: 'AIServices--AzureOpenAI--ChatDeploymentName'
             value: azureOpenAIChatModelName
+        }
+        {
+            name: 'AIServices--AzureOpenAI--EmbeddingsDeploymentName'
+            value: azureOpenAIEmbeddingsModelName
         }
         {
             name: 'AIServices--AzureOpenAI--Endpoint'
@@ -199,14 +206,25 @@ module aiDependencies './modules/create-azure-ai-service.bicep' = {
     managedIdentityResourceId: groundedInferenceApiIdentity.outputs.resourceId
     managedIdentityPrincipalId: groundedInferenceApiIdentity.outputs.principalId
     userPrincipalId: principalId
+    location: location
 
-     // Model deployment parameters
-     modelName: azureOpenAIChatModelName
-     modelFormat: 'OpenAI'
-     modelVersion: '2024-07-18'
-     modelSkuName: 'GlobalStandard'
-     modelCapacity: 50
-     modelLocation: location
+     // Model deployment properties
+     modelDeploymentsProps: [
+         {  
+            name: azureOpenAIChatModelName  
+            format: 'OpenAI'  
+            version: '2024-07-18'  
+            skuName: 'GlobalStandard'  
+            capacity: 4  
+        }
+        {  
+            name: azureOpenAIEmbeddingsModelName  
+            format: 'OpenAI'  
+            version: '2'  
+            skuName: 'Standard'  
+            capacity: 4  
+        }
+     ]
   }
 }
 

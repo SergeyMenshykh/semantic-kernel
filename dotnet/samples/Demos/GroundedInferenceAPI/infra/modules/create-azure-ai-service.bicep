@@ -1,26 +1,8 @@
 @description('AI services name')
 param aiServicesName string
 
-@description('Model name for deployment')
-param modelName string 
-
-@description('Model deployment name')
-param deploymentName string = modelName
-
-@description('Model format for deployment')
-param modelFormat string 
-
-@description('Model version for deployment')
-param modelVersion string 
-
-@description('Model deployment SKU name')
-param modelSkuName string 
-
-@description('Model deployment capacity')
-param modelCapacity int 
-
 @description('Model/AI Resource deployment location')
-param modelLocation string 
+param location string 
 
 @description('The AI Service Account full ARM Resource ID. This is an optional field, and if not provided, the resource will be created.')
 param aiServiceAccountResourceId string
@@ -34,6 +16,9 @@ param managedIdentityPrincipalId string
 @description('User principal ID')
 param userPrincipalId string
 
+@description('Array of properties for model deployments')
+param modelDeploymentsProps array
+
 var aiServiceExists = aiServiceAccountResourceId != ''
 
 var aiServiceParts = split(aiServiceAccountResourceId, '/')
@@ -45,7 +30,7 @@ resource existingAIServiceAccount 'Microsoft.CognitiveServices/accounts@2024-10-
 
 resource aiServices 'Microsoft.CognitiveServices/accounts@2024-10-01' = if(!aiServiceExists) {
   name: aiServicesName
-  location: modelLocation
+  location: location
   sku: {
     name: 'S0'
   }
@@ -93,20 +78,21 @@ resource userPrincipalOpenAIUserRoleAssignment 'Microsoft.Authorization/roleAssi
   }
 }
 
-resource modelDeployment 'Microsoft.CognitiveServices/accounts/deployments@2024-10-01'= if(!aiServiceExists) {
+@batchSize(1)
+resource modelDeployment 'Microsoft.CognitiveServices/accounts/deployments@2024-10-01'= [for modelProps in modelDeploymentsProps: if(!aiServiceExists) {
   parent: aiServices
-  name: deploymentName
+  name: modelProps.name
   sku : {
-    capacity: modelCapacity
-    name: modelSkuName
+    capacity: modelProps.capacity
+    name: modelProps.skuName
   }
   properties: {
     model:{
-      name: modelName
-      format: modelFormat
-      version: modelVersion
+      name: modelProps.name
+      format: modelProps.format
+      version: modelProps.version
     }
   }
-}
+}]
 
  output AZURE_AI_SERVICE_ENDPOINT string = aiServiceExists ? existingAIServiceAccount.properties.endpoints['OpenAI Language Model Instance API'] : aiServices.properties.endpoints['OpenAI Language Model Instance API']

@@ -19,6 +19,9 @@ param principalId string
 @description('Azure OpenAI chat model name')
 param azureOpenAIChatModelName string
 
+@description('Azure OpenAI embeddings model name')
+param azureOpenAIEmbeddingsModelName string
+
 // Tags that should be applied to all resources.
 // 
 // Note that 'azd-service-name' tags should be applied separately to service host resources.
@@ -45,6 +48,7 @@ module resources 'resources.bicep' = {
     groundedInferenceApiExists: groundedInferenceApiExists
     groundedInferenceApiDefinition: groundedInferenceApiDefinition
     azureOpenAIChatModelName: azureOpenAIChatModelName
+    azureOpenAIEmbeddingsModelName: azureOpenAIEmbeddingsModelName
   }
 }
 output AZURE_CONTAINER_REGISTRY_ENDPOINT string = resources.outputs.AZURE_CONTAINER_REGISTRY_ENDPOINT
@@ -52,4 +56,5 @@ output AZURE_KEY_VAULT_ENDPOINT string = resources.outputs.AZURE_KEY_VAULT_ENDPO
 output AZURE_KEY_VAULT_NAME string = resources.outputs.AZURE_KEY_VAULT_NAME
 output AZURE_RESOURCE_GROUNDED_INFERENCE_API_ID string = resources.outputs.AZURE_RESOURCE_GROUNDED_INFERENCE_API_ID
 output AZURE_OPENAI_CHAT_MODEL_NAME string = azureOpenAIChatModelName
+output AZURE_OPENAI_EMBEDDINGS_MODEL_NAME string = azureOpenAIEmbeddingsModelName
 output AZURE_AI_SERVICE_ENDPOINT string = resources.outputs.AZURE_AI_SERVICE_ENDPOINT

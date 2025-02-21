@@ -35,6 +35,9 @@
     },
     "azureOpenAIChatModelName": {
       "value": "${AZURE_OPENAI_CHAT_MODEL_NAME}"
+    },
+    "azureOpenAIEmbeddingsModelName": {
+      "value": "${AZURE_OPENAI_EMBEDDINGS_MODEL_NAME}"
     }
   }
 }
