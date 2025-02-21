@@ -11,4 +11,9 @@ public class PromptRequest
     /// Gets or sets the prompt.
     /// </summary>
     public required string Prompt { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether streaming is requested.
+    /// </summary>
+    public bool IsStreaming { get; set; }
 }

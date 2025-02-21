@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 
 using System.Runtime.CompilerServices;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.SemanticKernel;
 
@@ -10,7 +11,7 @@ namespace GroundedInferenceAPI.Controllers;
 /// Controller for completions.
 /// </summary>
 [ApiController]
-[Route("[controller]")]
+[Route("chat/completions")]
 [Consumes("application/json")]
 public class CompletionsController : ControllerBase
 {
@@ -33,21 +34,20 @@ public class CompletionsController : ControllerBase
     /// </summary>
     /// <param name="request">The request</param>
     /// <param name="cancellationToken">The cancellation token</param>
-    [HttpPost("Complete")]
-    public async Task<string> CompleteAsync([FromBody] PromptRequest request, CancellationToken cancellationToken)
+    [HttpPost]
+    public async Task<IActionResult> CompleteAsync([FromBody] PromptRequest request, CancellationToken cancellationToken)
     {
+        if (request.IsStreaming)
+        {
+            return this.Ok(this.CompleteStreamingAsync(request, cancellationToken));
+        }
+
         FunctionResult result = await this._kernel.InvokePromptAsync(request.Prompt, cancellationToken: cancellationToken).ConfigureAwait(false);
 
-        return result.ToString();
+        return this.Ok(result.ToString());
     }
 
-    /// <summary>
-    /// Get streaming completion for a given prompt
-    /// </summary>
-    /// <param name="request">The request</param>
-    /// <param name="cancellationToken">The cancellation token</param>
-    [HttpPost("CompleteStreaming")]
-    public async IAsyncEnumerable<string> CompleteStreamingAsync([FromBody] PromptRequest request, [EnumeratorCancellation] CancellationToken cancellationToken)
+    private async IAsyncEnumerable<string> CompleteStreamingAsync([FromBody] PromptRequest request, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         IAsyncEnumerable<StreamingKernelContent> content = this._kernel.InvokePromptStreamingAsync(request.Prompt, cancellationToken: cancellationToken);
 
