@@ -35,4 +35,12 @@ public sealed class FunctionChoiceBehaviorOptions
     /// </remarks>
     [JsonPropertyName("allow_strict_schema_adherence")]
     public bool AllowStrictSchemaAdherence { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets whether the types of function arguments provided by the AI model are retained by SK or not.
+    /// By default, or if set to false, SK will deserialize function arguments to strings, and type information will not be retained.
+    /// If set to true, function arguments will be deserialized as <see cref="System.Text.Json.JsonElement"/>, which retains type information.
+    /// </summary>
+    [JsonIgnore]
+    public bool RetainArgumentTypes { get; set; } = false;
 }
