@@ -168,6 +168,33 @@ internal static class AsyncEnumerable
         }
     }
 
+    /// <summary>
+    /// Creates an array from an async-enumerable sequence.
+    /// </summary>
+    /// <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
+    /// <param name="source">The source async-enumerable sequence to get an array of elements for.</param>
+    /// <param name="cancellationToken">The optional cancellation token to be used for cancelling the sequence at any time.</param>
+    /// <returns>An async-enumerable sequence containing a single element with an array containing all the elements of the source sequence.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="source"/> is null.</exception>
+    /// <remarks>The return type of this operator differs from the corresponding operator on IEnumerable in order to retain asynchronous behavior.</remarks>
+    public static ValueTask<TSource[]> ToArrayAsync<TSource>(this IAsyncEnumerable<TSource> source, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException("This method is not implemented yet. Please use the SelectAsync method instead.");
+    }
+
+    /// <summary>
+    /// Filters the elements of an async-enumerable sequence based on a predicate.
+    /// </summary>
+    /// <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
+    /// <param name="source">An async-enumerable sequence whose elements to filter.</param>
+    /// <param name="predicate">A function to test each source element for a condition.</param>
+    /// <returns>An async-enumerable sequence that contains elements from the input sequence that satisfy the condition.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="source"/> or <paramref name="predicate"/> is null.</exception>
+    public static IAsyncEnumerable<TSource> Where<TSource>(this IAsyncEnumerable<TSource> source, Func<TSource, bool> predicate)
+    {
+        throw new NotImplementedException("This method is not implemented yet. Please use the SelectAsync method instead.");
+    }
+
 #pragma warning restore IDE1006 // Naming rule violation: Missing suffix: 'Async'
 
     private sealed class EmptyAsyncEnumerable<T> : IAsyncEnumerable<T>, IAsyncEnumerator<T>
