@@ -122,7 +122,7 @@ public sealed class WebFileDownloadPlugin
             throw new InvalidOperationException("Downloading from the provided location is not allowed.");
         }
 
-        var expandedFilePath = Path.GetFullPath(Environment.ExpandEnvironmentVariables(filePath));
+        var expandedFilePath = LocalPathHelper.CanonicalizePath(filePath);
         if (!this.IsFilePathAllowed(expandedFilePath))
         {
             throw new InvalidOperationException("Downloading to the provided location is not allowed.");
@@ -208,48 +208,13 @@ public sealed class WebFileDownloadPlugin
     {
         Verify.NotNullOrWhiteSpace(path);
 
-        if (path.StartsWith("\\\\", StringComparison.OrdinalIgnoreCase))
-        {
-            throw new ArgumentException("Invalid file path, UNC paths are not supported.", nameof(path));
-        }
-
-        string? directoryPath = Path.GetDirectoryName(path);
-
-        if (string.IsNullOrEmpty(directoryPath))
-        {
-            throw new ArgumentException("Invalid file path, a fully qualified file location must be specified.", nameof(path));
-        }
-
         if (File.Exists(path) && File.GetAttributes(path).HasFlag(FileAttributes.ReadOnly))
         {
             // Most environments will throw this with OpenWrite, but running inside docker on Linux will not.
             throw new UnauthorizedAccessException($"File is read-only: {path}");
         }
 
-        if (this._allowedFolders is null || this._allowedFolders.Count == 0)
-        {
-            return false;
-        }
-
-        var canonicalDir = Path.GetFullPath(directoryPath);
-
-        foreach (var allowedFolder in this._allowedFolders)
-        {
-            var canonicalAllowed = Path.GetFullPath(allowedFolder);
-            var separator = Path.DirectorySeparatorChar.ToString();
-            if (!canonicalAllowed.EndsWith(separator, StringComparison.OrdinalIgnoreCase))
-            {
-                canonicalAllowed += separator;
-            }
-
-            if (canonicalDir.StartsWith(canonicalAllowed, StringComparison.OrdinalIgnoreCase)
-                || (canonicalDir + separator).Equals(canonicalAllowed, StringComparison.OrdinalIgnoreCase))
-            {
-                return true;
-            }
-        }
-
-        return false;
+        return LocalPathHelper.IsPathWithinAllowedDirectories(path, this._allowedFolders!);
     }
     #endregion
 }

@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -131,7 +130,7 @@ public sealed class CloudDrivePlugin
 
         Ensure.NotNullOrWhitespace(filePath, nameof(filePath));
 
-        if (!this.IsAllowedRemotePath(filePath, this._allowedReadPaths))
+        if (!IsAllowedRemotePath(filePath, this._allowedReadPaths))
         {
             throw new InvalidOperationException("Reading from the provided path is not allowed. Configure 'AllowedReadPaths' with trusted remote paths to enable reading.");
         }
@@ -169,14 +168,14 @@ public sealed class CloudDrivePlugin
             throw new ArgumentException("Variable was null or whitespace", nameof(destinationPath));
         }
 
-        if (!this.IsAllowedRemotePath(destinationPath, this._allowedUploadDestinationPaths))
+        if (!IsAllowedRemotePath(destinationPath, this._allowedUploadDestinationPaths))
         {
             throw new InvalidOperationException("Uploading to the provided remote destination is not allowed. Configure 'AllowedUploadDestinationPaths' with trusted remote paths to enable uploads.");
         }
 
         Ensure.NotNullOrWhitespace(filePath, nameof(filePath));
 
-        var canonicalPath = CanonicalizePath(filePath);
+        var canonicalPath = LocalPathHelper.CanonicalizePath(filePath);
 
         if (!this.IsUploadPathAllowed(canonicalPath))
         {
@@ -206,7 +205,7 @@ public sealed class CloudDrivePlugin
 
         Ensure.NotNullOrWhitespace(filePath, nameof(filePath));
 
-        if (!this.IsAllowedRemotePath(filePath, this._allowedSharePaths))
+        if (!IsAllowedRemotePath(filePath, this._allowedSharePaths))
         {
             throw new InvalidOperationException("Creating a share link for the provided path is not allowed. Configure 'AllowedSharePaths' with trusted remote paths to enable sharing.");
         }
@@ -215,147 +214,18 @@ public sealed class CloudDrivePlugin
     }
 
     #region private
-    // Use case-insensitive comparison on Windows (case-insensitive FS), case-sensitive on Linux/macOS.
-    private static readonly StringComparison s_pathComparison =
-        RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-            ? StringComparison.OrdinalIgnoreCase
-            : StringComparison.Ordinal;
-
     /// <summary>
     /// Checks whether the provided remote path falls within one of the allowed remote directory prefixes.
-    /// Paths are normalized with forward slashes, dot-segments are collapsed,
-    /// and compared case-insensitively (OneDrive paths are case-insensitive).
-    /// Subdirectories of allowed paths are permitted.
+    /// Delegates to <see cref="RemotePathHelper.IsPathWithinAllowedPrefixes"/>.
     /// </summary>
-    private bool IsAllowedRemotePath(string path, HashSet<string> allowedPaths)
-    {
-        Ensure.NotNullOrWhitespace(path, nameof(path));
-
-        if (allowedPaths.Count == 0)
-        {
-            return false;
-        }
-
-        // Normalize to forward slashes and collapse dot-segments to prevent traversal bypass.
-        var normalizedPath = NormalizeRemotePath(path);
-
-        foreach (var allowedPath in allowedPaths)
-        {
-            var normalizedAllowed = NormalizeRemotePath(allowedPath);
-            if (!normalizedAllowed.EndsWith("/", StringComparison.Ordinal))
-            {
-                normalizedAllowed += "/";
-            }
-
-            var normalizedDir = normalizedPath;
-            int lastSlash = normalizedDir.LastIndexOf('/');
-            if (lastSlash >= 0)
-            {
-                normalizedDir = normalizedDir.Substring(0, lastSlash);
-            }
-
-            if ((normalizedDir + "/").StartsWith(normalizedAllowed, StringComparison.OrdinalIgnoreCase)
-                || (normalizedDir + "/").Equals(normalizedAllowed, StringComparison.OrdinalIgnoreCase))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /// <summary>
-    /// Normalizes a remote path by replacing backslashes with forward slashes
-    /// and collapsing "." and ".." segments to prevent traversal bypass.
-    /// </summary>
-    private static string NormalizeRemotePath(string path)
-    {
-        var normalizedPath = path.Replace('\\', '/');
-
-        // Collapse ".." and "." segments to prevent traversal bypass.
-        var segments = normalizedPath.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
-        var stack = new List<string>();
-        foreach (var segment in segments)
-        {
-            if (segment == ".." && stack.Count > 0)
-            {
-                stack.RemoveAt(stack.Count - 1);
-            }
-            else if (segment != "." && segment != "..")
-            {
-                stack.Add(segment);
-            }
-        }
-
-        return "/" + string.Join("/", stack);
-    }
-
-    /// <summary>
-    /// Expands environment variables and resolves the path to its canonical form.
-    /// This must be called before validation to prevent validate/use mismatches.
-    /// </summary>
-    private static string CanonicalizePath(string path)
-    {
-        Ensure.NotNullOrWhitespace(path, nameof(path));
-
-        if (path.StartsWith("\\\\", StringComparison.OrdinalIgnoreCase) ||
-            path.StartsWith("//", StringComparison.OrdinalIgnoreCase))
-        {
-            throw new ArgumentException("Invalid file path, UNC paths are not supported.", nameof(path));
-        }
-
-        // Expand environment variables first, then canonicalize — so that
-        // validation and I/O operate on the same resolved path.
-        var expanded = Environment.ExpandEnvironmentVariables(path);
-
-        // Re-check after expansion: an env var could have expanded to a UNC
-        // or extended-path prefix (e.g., %NETSHARE% → \\server\share).
-        if (expanded.StartsWith("\\\\", StringComparison.OrdinalIgnoreCase) ||
-            expanded.StartsWith("//", StringComparison.OrdinalIgnoreCase))
-        {
-            throw new ArgumentException("Invalid file path, UNC paths are not supported.", nameof(path));
-        }
-
-        return Path.GetFullPath(expanded);
-    }
+    private static bool IsAllowedRemotePath(string path, HashSet<string> allowedPaths)
+        => RemotePathHelper.IsPathWithinAllowedPrefixes(path, allowedPaths);
 
     /// <summary>
     /// Checks whether a canonicalized file path falls within one of the allowed upload directories.
-    /// Subdirectories of allowed directories are also permitted.
+    /// Delegates to <see cref="LocalPathHelper.IsPathWithinAllowedDirectories"/>.
     /// </summary>
     private bool IsUploadPathAllowed(string canonicalPath)
-    {
-        Ensure.NotNullOrWhitespace(canonicalPath, nameof(canonicalPath));
-
-        string? directoryPath = Path.GetDirectoryName(canonicalPath);
-
-        if (string.IsNullOrEmpty(directoryPath))
-        {
-            throw new ArgumentException("Invalid file path, a fully qualified file location must be specified.", nameof(canonicalPath));
-        }
-
-        if (this._allowedUploadDirectories.Count == 0)
-        {
-            return false;
-        }
-
-        foreach (var allowedDirectory in this._allowedUploadDirectories)
-        {
-            var canonicalAllowed = Path.GetFullPath(allowedDirectory);
-            var separator = Path.DirectorySeparatorChar.ToString();
-            if (!canonicalAllowed.EndsWith(separator, s_pathComparison))
-            {
-                canonicalAllowed += separator;
-            }
-
-            if (directoryPath.StartsWith(canonicalAllowed, s_pathComparison)
-                || (directoryPath + separator).Equals(canonicalAllowed, s_pathComparison))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
+        => LocalPathHelper.IsPathWithinAllowedDirectories(canonicalPath, this._allowedUploadDirectories);
     #endregion
 }
